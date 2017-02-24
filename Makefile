@@ -1,10 +1,8 @@
-binary: main.o libheap.a
-	gcc -o binary main.o -L. -lheap
-main.o: main.c
-	gcc -c main.c
-libheap.a: heap.o
-	ar cr libheap.a heap.o
-heap.o: heap.c heap.h
-	gcc -c heap.c
+huff: main.c encode.c heap.c
+	gcc -o huff  main.c encode.c heap.c
+heap.c: heap.h
+
+main.c: encode.c encode.h
+
 clean:
-	rm -rf *.o *.a binary
+	rm -rf *.o *.a huff 
