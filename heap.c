@@ -9,7 +9,8 @@ heap* create_heap(int size)
 	{
 		h->maxSize = size;
 		h->curSize = 0;
-		h->nodes = malloc((size + 1) * sizeof(struct heapNode));
+		h->nodes = malloc((size + 1) * sizeof(heapNode));
+		
 
 		if (h->nodes == NULL)
 		{
@@ -50,7 +51,7 @@ heapNode get_min_node_heap(heap* h)
 	}
 }
 
-bool insert_node_heap(heap* h, int priority, char value)
+bool insert_node_heap(heap* h, int priority, unsigned char value, heapNode* leftSon, heapNode* rightSon)
 {
 	if (h->curSize >= h->maxSize)
 	{
@@ -61,6 +62,8 @@ bool insert_node_heap(heap* h, int priority, char value)
 	h->curSize++;
 	h->nodes[h->curSize].priority = priority;
 	h->nodes[h->curSize].value = value;
+	h->nodes[h->curSize].left = leftSon;
+	h->nodes[h->curSize].right = rightSon;
 
 	int i = 0;
 	for (i = h->curSize; i > 1 && h->nodes[i].priority < h->nodes[i / 2].priority; i = i / 2)
