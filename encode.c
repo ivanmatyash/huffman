@@ -5,19 +5,6 @@
 #define SIZE_BUF 100
 #define SIZE_TABLE 256
 
-void deleteNode(heapNode* ttt)
-{
-	heapNode *t1, *t2;
-	t1 = ttt->left;
-	t2 = ttt->right;
-
-	free(ttt);
-	if (t1 != NULL)
-		deleteNode(t1);
-	if (t2 != NULL)
-		deleteNode(t2);
-}
-
 void showArray(char* array, int size)
 {
 	printf("\n\nSHOW ARRAY CHAR\n\n");
