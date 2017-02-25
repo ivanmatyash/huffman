@@ -70,7 +70,7 @@ void createHuffmanTree(heap* h, heapNode arrayHeapNodes[SIZE_TABLE * 3])
 		arrayHeapNodes[counter] = remove_min_node_heap(h);
 		counter++;
 		arrayHeapNodes[counter] = remove_min_node_heap(h);
-//		printf("%d - %c - %d: %d - %c - %d\n\n", arrayHeapNodes[counter-1].priority, arrayHeapNodes[counter-1].value,arrayHeapNodes[counter-1].value, arrayHeapNodes[counter].priority, arrayHeapNodes[counter].value, arrayHeapNodes[counter].value);
+		printf("%d - %c - %d: %d - %c - %d\n\n", arrayHeapNodes[counter-1].priority, arrayHeapNodes[counter-1].value,arrayHeapNodes[counter-1].value, arrayHeapNodes[counter].priority, arrayHeapNodes[counter].value, arrayHeapNodes[counter].value);
 		insert_node_heap(h, arrayHeapNodes[counter-1].priority + arrayHeapNodes[counter].priority, arrayHeapNodes[counter-1].value + arrayHeapNodes[counter].value, &arrayHeapNodes[counter-1], &arrayHeapNodes[counter]);
 		counter++;
 	}	
@@ -99,12 +99,6 @@ void encode(char* fileName)
 
 	getHuffmanTree(h, arrayHeapNodes, array_f);
 		
-	heapNode he = remove_min_node_heap(h);
-//	heapNode h1 = *he.right;
-//	heapNode h3 = *h1.left;
-//	heapNode h2 = *h3.left;
-	printf("%d %d", he.priority, he.value);
+	heapNode root = remove_min_node_heap(h);
 	delete_heap(h);
 }
-
-
