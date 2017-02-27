@@ -57,7 +57,7 @@ void createHuffmanTree(heap* h, heapNode arrayHeapNodes[SIZE_TABLE * 3])
 		arrayHeapNodes[counter] = remove_min_node_heap(h);
 		counter++;
 		arrayHeapNodes[counter] = remove_min_node_heap(h);
-		printf("%d - %c - %d: %d - %c - %d\n\n", arrayHeapNodes[counter-1].priority, arrayHeapNodes[counter-1].value,arrayHeapNodes[counter-1].value, arrayHeapNodes[counter].priority, arrayHeapNodes[counter].value, arrayHeapNodes[counter].value);
+//		printf("%d - %c - %d: %d - %c - %d\n\n", arrayHeapNodes[counter-1].priority, arrayHeapNodes[counter-1].value,arrayHeapNodes[counter-1].value, arrayHeapNodes[counter].priority, arrayHeapNodes[counter].value, arrayHeapNodes[counter].value);
 		insert_node_heap(h, arrayHeapNodes[counter-1].priority + arrayHeapNodes[counter].priority, arrayHeapNodes[counter-1].value + arrayHeapNodes[counter].value, &arrayHeapNodes[counter-1], &arrayHeapNodes[counter]);
 		counter++;
 	}	
@@ -77,15 +77,51 @@ void getHuffmanTree(heap* h, heapNode arrayHeapNodes[SIZE_TABLE * 3], int array_
 	createHuffmanTree(h, arrayHeapNodes);
 }
 
+void paintingHuffmanTree(heapNode *root, unsigned long HUFFMAN_CODES_ARRAY[SIZE_TABLE], unsigned int AMOUNT_OF_SIGN_BITS[SIZE_TABLE])
+{
+	
+	if (root->right != NULL)
+	{
+		(root->right)->huffmanCode = root->huffmanCode << 1;
+		(root->right)->huffmanCode = (root->right)->huffmanCode | 1;
+		(root->right)->amountOfSignificantBits = root->amountOfSignificantBits + 1;
+		paintingHuffmanTree(root->right, HUFFMAN_CODES_ARRAY, AMOUNT_OF_SIGN_BITS);
+	}
+
+	if (root->left != NULL)
+	{
+		(root->left)->huffmanCode = root->huffmanCode << 1;
+		(root->left)->amountOfSignificantBits = root->amountOfSignificantBits + 1;
+		paintingHuffmanTree(root->left, HUFFMAN_CODES_ARRAY, AMOUNT_OF_SIGN_BITS);
+	}
+
+	if (root->left == NULL && root->right == NULL)
+	{
+		HUFFMAN_CODES_ARRAY[root->value] = root->huffmanCode;
+		AMOUNT_OF_SIGN_BITS[root->value] = root->amountOfSignificantBits;
+	}
+
+}
+
 void encode(char* fileName)
 {
 	int array_f[SIZE_TABLE] = {0};
 	getFrequency(fileName, array_f);
 	heap* h = create_heap(SIZE_TABLE);
 	heapNode arrayHeapNodes[SIZE_TABLE * 3];
-
+	
 	getHuffmanTree(h, arrayHeapNodes, array_f);
 		
 	heapNode root = remove_min_node_heap(h);
+
+	unsigned long HUFFMAN_CODES_ARRAY[SIZE_TABLE];
+	unsigned int AMOUNT_OF_SIGN_BITS[SIZE_TABLE];
+
+	paintingHuffmanTree(&root, HUFFMAN_CODES_ARRAY, AMOUNT_OF_SIGN_BITS);
+	
+	heapNode t = *(((root.right)->left)->right)->left;
+	printf("\n%d\n", t.huffmanCode);
+
+	showArrayInt(AMOUNT_OF_SIGN_BITS, SIZE_TABLE);	
 	delete_heap(h);
 }
