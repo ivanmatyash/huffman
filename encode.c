@@ -103,6 +103,25 @@ void paintingHuffmanTree(heapNode *root, unsigned long HUFFMAN_CODES_ARRAY[SIZE_
 
 }
 
+void writeCodeInFile(char* fileName, long HUFFMAN_CODES_ARRAY[SIZE_TABLE], int AMOUNT_OF_SIGN_BITS[SIZE_TABLE])
+{
+	unsigned char buffer[SIZE_BUF] = {0};
+	int endOfFile = 1;
+	FILE* file = fopen(fileName, "rb");
+	while (endOfFile)
+	{
+		if (fread(buffer, 1, 100, file) < SIZE_BUF)
+		{
+			endOfFile = 0;
+		}
+	}
+	fclose(file);
+	for (int i = 0; i < SIZE_BUF; i++)
+	{
+		printf("%d\n", HUFFMAN_CODES_ARRAY[buffer[i]]);
+	}
+}
+
 void encode(char* fileName)
 {
 	int array_f[SIZE_TABLE] = {0};
@@ -119,9 +138,6 @@ void encode(char* fileName)
 
 	paintingHuffmanTree(&root, HUFFMAN_CODES_ARRAY, AMOUNT_OF_SIGN_BITS);
 	
-	heapNode t = *(((root.right)->left)->right)->left;
-	printf("\n%d\n", t.huffmanCode);
-
-	showArrayInt(AMOUNT_OF_SIGN_BITS, SIZE_TABLE);	
+	writeCodeInFile(fileName, HUFFMAN_CODES_ARRAY, AMOUNT_OF_SIGN_BITS);
 	delete_heap(h);
 }
