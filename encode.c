@@ -114,12 +114,13 @@ void writeCodeInFile(char* fileName, long HUFFMAN_CODES_ARRAY[SIZE_TABLE], int A
 		{
 			endOfFile = 0;
 		}
+		for (int i = 0; i < SIZE_BUF; i++)
+		{
+			printf("%d\n", HUFFMAN_CODES_ARRAY[buffer[i]]);
+		}
 	}
 	fclose(file);
-	for (int i = 0; i < SIZE_BUF; i++)
-	{
-		printf("%d\n", HUFFMAN_CODES_ARRAY[buffer[i]]);
-	}
+
 }
 
 void encode(char* fileName)
