@@ -7,6 +7,8 @@ struct heapNode
 	unsigned char value;
 	struct heapNode *left;
 	struct heapNode *right;
+	unsigned int huffmanCode;
+	unsigned int amountOfSignificantBits;
 } typedef heapNode;
 
 struct heap
