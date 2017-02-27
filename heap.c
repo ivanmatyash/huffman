@@ -64,7 +64,8 @@ bool insert_node_heap(heap* h, int priority, unsigned char value, heapNode* left
 	h->nodes[h->curSize].value = value;
 	h->nodes[h->curSize].left = leftSon;
 	h->nodes[h->curSize].right = rightSon;
-
+	h->nodes[h->curSize].huffmanCode = 0;
+	h->nodes[h->curSize].amountOfSignificantBits = 0;	
 	int i = 0;
 	for (i = h->curSize; i > 1 && h->nodes[i].priority < h->nodes[i / 2].priority; i = i / 2)
 	{
