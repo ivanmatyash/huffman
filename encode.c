@@ -6,7 +6,7 @@
 
 #define SIZE_BUF 1000
 #define SIZE_TABLE 256
-#define SIZE_BUF_FOR_WRITE 100
+#define SIZE_BUF_FOR_WRITE 1000000
 
 void showArray(unsigned int* array, unsigned long *ar,  int size)
 {
@@ -113,19 +113,18 @@ void writeCodeInFile(char* fileName, unsigned long HUFFMAN_CODES_ARRAY[SIZE_TABL
 	int endOfFile = 1;
 	FILE* file = fopen(fileName, "rb");
 	FILE *fileOut = fopen("out.bin", "wb");
-	fseek(fileOut, sizeof(int)  + sizeof(int) + sizeof(unsigned long) * SIZE_TABLE + sizeof(unsigned int) * SIZE_TABLE, SEEK_SET); // place for amount of long variables + codes + amount of bits
+	fseek(fileOut, sizeof(int)  + sizeof(int) + sizeof(unsigned long) * SIZE_TABLE + sizeof(unsigned int) * SIZE_TABLE, SEEK_SET); // place for amount of long variables + amount of last bits +  codes + amount of bits
 	int number = 0, counterBits = 0, amount_of_w = 1;
 	while (endOfFile)
 	{
 		memset(buffer, 0, sizeof(unsigned char) * SIZE_BUF);
-		int amount_read = fread(buffer, 1, SIZE_BUF, file);
+		int amount_read = fread(buffer, sizeof(unsigned char), SIZE_BUF, file);
 		if (amount_read < SIZE_BUF)
 		{
 			endOfFile = 0;
 		}
 		for (int i = 0; i < amount_read; i++)
 		{
-
 			counterBits += AMOUNT_OF_SIGN_BITS[buffer[i]];
 			bool flag = false;
 			if (counterBits >= 64)
@@ -151,6 +150,7 @@ void writeCodeInFile(char* fileName, unsigned long HUFFMAN_CODES_ARRAY[SIZE_TABL
 		if (!endOfFile)
 		{
 			fwrite(bufferForWrite, sizeof(unsigned long), number+1, fileOut);
+			fflush(fileOut);
 			continue;
 		}
 	
@@ -159,8 +159,10 @@ void writeCodeInFile(char* fileName, unsigned long HUFFMAN_CODES_ARRAY[SIZE_TABL
 //			for (int i = 0; i < number; i++)
 //				printf("i: %d - %lu\n", i, bufferForWrite[i]);
 			fwrite(bufferForWrite, sizeof(unsigned long), number, fileOut);
-			bufferForWrite[0] = bufferForWrite[number];
-			memset(bufferForWrite + 1, 0, sizeof(unsigned long) * number + 5);
+			fflush(fileOut);
+			unsigned long temp = bufferForWrite[number];
+			memset(bufferForWrite, 0, sizeof(unsigned long) * SIZE_BUF_FOR_WRITE);
+			bufferForWrite[0] = temp;
 			number = 0;
 		}
 	}
@@ -171,9 +173,9 @@ void writeCodeInFile(char* fileName, unsigned long HUFFMAN_CODES_ARRAY[SIZE_TABL
 	fwrite(AMOUNT_OF_SIGN_BITS, sizeof(unsigned int), SIZE_TABLE, fileOut);
 	fclose(fileOut);
 	fclose(file);
-/*
+
 	printf("amount = %d\n", amount_of_w);
-	for (int i = 0; i <= number; i++)
+/*	for (int i = 0; i <= number; i++)
 	{
 		printf("%lu\n", bufferForWrite[i]);
 	}
@@ -189,7 +191,7 @@ void encode(char* fileName)
 	heap* h = create_heap(SIZE_TABLE);
 	heapNode arrayHeapNodes[SIZE_TABLE * 3];
 
-	showArrayInt(array_f, SIZE_TABLE);
+//	showArrayInt(array_f, SIZE_TABLE);
 	
 	getHuffmanTree(h, arrayHeapNodes, array_f);
 		
@@ -213,7 +215,7 @@ void encode(char* fileName)
 	clock_t end_time = clock();
 
 	printf("time of encoding: %lf\n",((double) end_time - start_time) / CLOCKS_PER_SEC);
-	showArray(AMOUNT_OF_SIGN_BITS, HUFFMAN_CODES_ARRAY, SIZE_TABLE);
+//	showArray(AMOUNT_OF_SIGN_BITS, HUFFMAN_CODES_ARRAY, SIZE_TABLE);
 	delete_heap(h);
 	
 }
