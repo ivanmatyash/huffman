@@ -102,7 +102,7 @@ void parse_code(unsigned long *code, int size, int amountBitsInLastVar, element_
 		}
 
 		tempCode |= ((code[count] << success_bit) >> (64 - counter));
-	//	printf("code: %lu\n", tempCode);
+		//printf("code: %lu\n", tempCode);
 		symbol = binary_search(tempCode, elementArray, counter + counterOfLast);
 		if (symbol == -1)
 		{
@@ -122,10 +122,10 @@ void parse_code(unsigned long *code, int size, int amountBitsInLastVar, element_
 		else
 		{
 			fwrite(&symbol, sizeof(unsigned char), 1, out);
-			//printf("%c", symbol);
+			//printf("%c\n", symbol);
 			success_bit += counter;
 			counter = 1;
-	//		printf("suc bits: %d\n", success_bit);
+			//printf("suc bits: %d\n", success_bit);
 			endOfStruct = 0;
 			if ((counter - 1) + success_bit == 64)
 			{
@@ -158,8 +158,7 @@ int main(void)
 	fread(&amountBitsInLastVar, sizeof(int), 1, file);
 	fread(HUFFMAN_CODES, sizeof(unsigned long), SIZE_TABLE, file);
 	fread(AMOUNT_OF_BITS, sizeof(unsigned int), SIZE_TABLE, file);
-	
-//	showArray(AMOUNT_OF_BITS, HUFFMAN_CODES, SIZE_TABLE);
+	//showArray(AMOUNT_OF_BITS, HUFFMAN_CODES, SIZE_TABLE);
 
 	//printf("amount = %d\n", amount);
 
@@ -172,15 +171,15 @@ int main(void)
 	
 	qsort(elementArray, SIZE_TABLE, sizeof(element_st), compare);
 	//printf ("%d\n", elementArray[255].huffman_code);
-	//printf("amount = %d\n", amount);
-
+	printf("amount = %d\n", amount);
+	printf("bits = %d\n", amountBitsInLastVar);
 	unsigned long buffer_zip[amount];
 	fread(buffer_zip, sizeof(unsigned long), amount, file);
 	parse_code(buffer_zip, amount, amountBitsInLastVar, elementArray);
 	
 
-//	for (int i = 0; i < amount; i++)	
-//		printf("\n%lu\n", buffer_zip[i]);
+	//for (int i = 0; i < amount; i++)	
+	//	printf("%lu\n", buffer_zip[i]);
 	
 	fclose(file);
 	return 0;
