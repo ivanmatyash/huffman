@@ -30,7 +30,6 @@ void updateFreq(int* array_f, unsigned char *buffer)
 {
 	for (int i = 0; i < SIZE_BUF; i++)
 	{
-		if (buffer[i] != 0)
 			array_f[buffer[i]]++;
 	}
 }
@@ -43,7 +42,7 @@ void getFrequency(char* fileName, int *array_f)
 	while (endOfFile)
 	{
 		memset(buffer, 0, sizeof(unsigned char) * SIZE_BUF);
-		if (fread(buffer, 1, SIZE_BUF, file) < SIZE_BUF)
+		if (fread(buffer, sizeof(unsigned char), SIZE_BUF, file) < SIZE_BUF)
 		{
 			endOfFile = 0;
 		}
@@ -71,7 +70,7 @@ void getHuffmanTree(heap* h, heapNode arrayHeapNodes[SIZE_TABLE * 3], int array_
 {
 	for (int i = 0; i < SIZE_TABLE; i++)
 	{
-		if (array_f[i] != 0 && i != '\n')
+		if (array_f[i] != 0)
 		{
 			insert_node_heap(h, array_f[i], i, NULL, NULL);
 		}
@@ -190,7 +189,7 @@ void encode(char* fileName)
 	heap* h = create_heap(SIZE_TABLE);
 	heapNode arrayHeapNodes[SIZE_TABLE * 3];
 
-//	showArrayInt(array_f, SIZE_TABLE);
+	showArrayInt(array_f, SIZE_TABLE);
 	
 	getHuffmanTree(h, arrayHeapNodes, array_f);
 		
@@ -214,7 +213,7 @@ void encode(char* fileName)
 	clock_t end_time = clock();
 
 	printf("time of encoding: %lf\n",((double) end_time - start_time) / CLOCKS_PER_SEC);
-//	showArray(AMOUNT_OF_SIGN_BITS, HUFFMAN_CODES_ARRAY, SIZE_TABLE);
+	showArray(AMOUNT_OF_SIGN_BITS, HUFFMAN_CODES_ARRAY, SIZE_TABLE);
 	delete_heap(h);
 	
 }
