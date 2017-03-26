@@ -113,6 +113,16 @@ void write_code_in_file(char* input_file_name, char* output_file_name, unsigned 
 	int number = 0, counter_bits = 0, amount_of_written = 1;
 	int end_of_file = 0;
 	
+	char test_of_empty_file = 0;				// buffer - for reading 1 symbol from input file
+	int test_empty = fread(buffer, sizeof(char), 1, input_file);	
+	if (test_empty == 0) {						// if read 0 byte
+		end_of_file = 1;
+		amount_of_written = 0;					// amount of writting blocks = 0
+	} else {
+		fseek(input_file, 0, SEEK_SET);
+	}
+	
+
 	while (!end_of_file) {
 		memset(buffer, 0, sizeof(unsigned char) * SIZE_BUF);
 		int amount_read = 0;

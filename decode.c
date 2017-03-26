@@ -52,6 +52,14 @@ unsigned long get_max_huffman_code(unsigned long *huffman_codes)
 
 void create_hash_table(element_st *hash_table, unsigned long *huffman_codes, unsigned int *amount_of_bits, unsigned long max_huff_code)
 {
+	for (int i = 0; i < max_huff_code; i++)
+	{
+		hash_table[i].symbol = -1;
+		hash_table[i].amount_of_bits = 0;
+		hash_table[i].huffman_code = 0;
+		hash_table[i].next = NULL;
+	}
+
 	unsigned long counter_for_collisions = max_huff_code / 2;	
 	
 	for (int i = 0; i < SIZE_TABLE; i++) {
@@ -88,6 +96,11 @@ void parse_code(char* input_file_name, char* output_file_name)
 	unsigned long code[SIZE_BUF_FOR_READ];					// read info from input file
 	
 	fread(&amount, sizeof(int), 1, input_file);				// amount of blocks
+	if (amount == 0) {
+		fclose(input_file);	
+		fclose(output_file);
+		return;
+	}
 	fread(&amount_bits_in_last_var, sizeof(int), 1, input_file);		// amount significant bits in last block
 	fread(huffman_codes, sizeof(unsigned long), SIZE_TABLE, input_file);	// array with huffman codes
 	fread(amount_of_bits, sizeof(unsigned int), SIZE_TABLE, input_file);	// array with amount of significant bits
