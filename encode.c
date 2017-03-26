@@ -3,6 +3,7 @@
 #include <math.h>
 #include <string.h>
 #include <time.h>
+#include <sys/stat.h>
 
 #define SIZE_BUF 10 
 #define SIZE_TABLE 256
@@ -15,15 +16,6 @@ void showArray(unsigned int* array, unsigned long *ar,  int size)
 	{
 		if (array[i] != 0)
 		printf("%d: %lu - %d\n", i, ar[i], array[i]);
-	}
-}
-
-void showArrayInt(int* array, int size)
-{
-	printf("\n\nSHOW ARRAY INT\n\n");
-	for (int i = 0; i < size; i++)
-	{
-		printf("%d: %d\n", i, array[i]);
 	}
 }
 
@@ -53,10 +45,10 @@ void getFrequency(char* fileName, int *array_f)
 	
 }
 
-void createHuffmanTree(heap* h, heapNode arrayHeapNodes[SIZE_TABLE * 3])
+void createHuffmanTree(heap* h, heap_node arrayHeapNodes[SIZE_TABLE * 3])
 {
 	int counter = 0;
-	while(h->curSize >1)
+	while(h->cur_size >1)
 	{
 		arrayHeapNodes[counter] = remove_min_node_heap(h);
 		counter++;
@@ -67,7 +59,7 @@ void createHuffmanTree(heap* h, heapNode arrayHeapNodes[SIZE_TABLE * 3])
 	}	
 }
 
-void getHuffmanTree(heap* h, heapNode arrayHeapNodes[SIZE_TABLE * 3], int array_f[SIZE_TABLE])
+void getHuffmanTree(heap* h, heap_node arrayHeapNodes[SIZE_TABLE * 3], int array_f[SIZE_TABLE])
 {
 	for (int i = 0; i < SIZE_TABLE; i++)
 	{
@@ -81,39 +73,39 @@ void getHuffmanTree(heap* h, heapNode arrayHeapNodes[SIZE_TABLE * 3], int array_
 	createHuffmanTree(h, arrayHeapNodes);
 }
 
-void paintingHuffmanTree(heapNode *root, unsigned long HUFFMAN_CODES_ARRAY[SIZE_TABLE], unsigned int AMOUNT_OF_SIGN_BITS[SIZE_TABLE])
+void paintingHuffmanTree(heap_node *root, unsigned long HUFFMAN_CODES_ARRAY[SIZE_TABLE], unsigned int AMOUNT_OF_SIGN_BITS[SIZE_TABLE])
 {
 	
 	if (root->right != NULL)
 	{
-		(root->right)->huffmanCode = root->huffmanCode << 1;
-		(root->right)->huffmanCode = (root->right)->huffmanCode | 1;
-		(root->right)->amountOfSignificantBits = root->amountOfSignificantBits + 1;
+		(root->right)->huffman_code = root->huffman_code << 1;
+		(root->right)->huffman_code = (root->right)->huffman_code | 1;
+		(root->right)->amount_of_significant_bits = root->amount_of_significant_bits + 1;
 		paintingHuffmanTree(root->right, HUFFMAN_CODES_ARRAY, AMOUNT_OF_SIGN_BITS);
 	}
 
 	if (root->left != NULL)
 	{
-		(root->left)->huffmanCode = root->huffmanCode << 1;
-		(root->left)->amountOfSignificantBits = root->amountOfSignificantBits + 1;
+		(root->left)->huffman_code = root->huffman_code << 1;
+		(root->left)->amount_of_significant_bits = root->amount_of_significant_bits + 1;
 		paintingHuffmanTree(root->left, HUFFMAN_CODES_ARRAY, AMOUNT_OF_SIGN_BITS);
 	}
 
 	if (root->left == NULL && root->right == NULL)
 	{
-		HUFFMAN_CODES_ARRAY[root->value] = root->huffmanCode;
-		AMOUNT_OF_SIGN_BITS[root->value] = root->amountOfSignificantBits;
+		HUFFMAN_CODES_ARRAY[root->value] = root->huffman_code;
+		AMOUNT_OF_SIGN_BITS[root->value] = root->amount_of_significant_bits;
 	}
 
 }
 
-void writeCodeInFile(char* fileName, unsigned long HUFFMAN_CODES_ARRAY[SIZE_TABLE], unsigned int AMOUNT_OF_SIGN_BITS[SIZE_TABLE])
+void writeCodeInFile(char* input_file, char* output_file, unsigned long HUFFMAN_CODES_ARRAY[SIZE_TABLE], unsigned int AMOUNT_OF_SIGN_BITS[SIZE_TABLE])
 {
 	unsigned long bufferForWrite[SIZE_BUF_FOR_WRITE] = {0};	
 	unsigned char buffer[SIZE_BUF] = {0};
 	int endOfFile = 1;
-	FILE* file = fopen(fileName, "rb");
-	FILE *fileOut = fopen("out.bin", "wb");
+	FILE* file = fopen(input_file, "rb");
+	FILE *fileOut = fopen(output_file, "wb");
 	fseek(fileOut, sizeof(int)  + sizeof(int) + sizeof(unsigned long) * SIZE_TABLE + sizeof(unsigned int) * SIZE_TABLE, SEEK_SET); // place for amount of long variables + amount of last bits +  codes + amount of bits
 	int number = 0, counterBits = 0, amount_of_w = 1;
 	while (endOfFile)
@@ -184,19 +176,21 @@ void writeCodeInFile(char* fileName, unsigned long HUFFMAN_CODES_ARRAY[SIZE_TABL
 	printf("amount bits: %d\n", counterBits);
 }
 
-void encode(char* fileName)
+void encode(char* input_file, char* output_file)
 {
+	heap_node *t;
+	printf("size = %zu\n", sizeof(unsigned int));
 	clock_t start_time = clock();
 	int array_f[SIZE_TABLE] = {0};
-	getFrequency(fileName, array_f);
+	getFrequency(input_file, array_f);
 	heap* h = create_heap(SIZE_TABLE);
-	heapNode arrayHeapNodes[SIZE_TABLE * 3];
+	heap_node arrayHeapNodes[SIZE_TABLE * 3];
 
 //	showArrayInt(array_f, SIZE_TABLE);
 	
 	getHuffmanTree(h, arrayHeapNodes, array_f);
 		
-	heapNode root = remove_min_node_heap(h);
+	heap_node root = remove_min_node_heap(h);
 
 	unsigned long HUFFMAN_CODES_ARRAY[SIZE_TABLE];
 	unsigned int AMOUNT_OF_SIGN_BITS[SIZE_TABLE];
@@ -211,11 +205,15 @@ void encode(char* fileName)
 		paintingHuffmanTree(&root, HUFFMAN_CODES_ARRAY, AMOUNT_OF_SIGN_BITS);
 	}
 
-	writeCodeInFile(fileName, HUFFMAN_CODES_ARRAY, AMOUNT_OF_SIGN_BITS);
+	writeCodeInFile(input_file, output_file, HUFFMAN_CODES_ARRAY, AMOUNT_OF_SIGN_BITS);
 
 	clock_t end_time = clock();
 
 	printf("time of encoding: %lf\n",((double) end_time - start_time) / CLOCKS_PER_SEC);
+	struct stat st;
+	stat(input_file, &st);
+	int size = st.st_size;
+	printf("Size of input file: %d\n", size);
 //	showArray(AMOUNT_OF_SIGN_BITS, HUFFMAN_CODES_ARRAY, SIZE_TABLE);
 	delete_heap(h);
 	
