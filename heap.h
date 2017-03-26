@@ -20,7 +20,7 @@ struct heap
 } typedef heap;
 
 heap* create_heap(int);
-void delete_heap();
+void delete_heap(heap*);
 void swap_nodes_heap(heap_node*, heap_node*);
 heap_node get_min_node_heap(heap*);
 bool insert_node_heap(heap*, int, unsigned char, heap_node*, heap_node*);
