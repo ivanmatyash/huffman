@@ -53,7 +53,7 @@ int binary_search(unsigned long code, unsigned int amount_of_bits, element_st *h
 	}	
 }
 
-unsigned long getMaxHuffmanCode(unsigned long *huffman_codes)
+unsigned long get_max_huffman_code(unsigned long *huffman_codes)
 {
 	unsigned long max = 0;
 	for (int i = 0; i < SIZE_TABLE; i++)
@@ -67,9 +67,9 @@ unsigned long getMaxHuffmanCode(unsigned long *huffman_codes)
 	return max;
 }
 
-void createHashTable(element_st *hash_table, unsigned long *huffman_codes, unsigned int *amount_of_bits, unsigned long maxHuffCode)
+void createHashTable(element_st *hash_table, unsigned long *huffman_codes, unsigned int *amount_of_bits, unsigned long max_huff_code)
 {
-	for (int i = 0; i < maxHuffCode; i++)
+	for (int i = 0; i < max_huff_code; i++)
 	{
 		hash_table[i].symbol = -1;
 		hash_table[i].amount_of_bits = 0;
@@ -77,7 +77,7 @@ void createHashTable(element_st *hash_table, unsigned long *huffman_codes, unsig
 		hash_table[i].next = NULL;
 	}
 	
-	unsigned long counterForCollisions = maxHuffCode / 2;	
+	unsigned long counterForCollisions = max_huff_code / 2;	
 	
 	for (int i = 0; i < SIZE_TABLE; i++)
 	{
@@ -109,48 +109,48 @@ void createHashTable(element_st *hash_table, unsigned long *huffman_codes, unsig
 void parse_code(char* input_file, char* output_file)
 {
 	FILE * file = fopen(input_file, "rb");
-	unsigned char buffer_for_write[SIZE_BUF_FOR_WRITE];
-
+	FILE *out = fopen(output_file, "wb");
+	
 	int amount = 0;
 	int amount_bits_in_last_var = 0;
 	int count_buffer_for_write = 0;
-
+	
+	unsigned char buffer_for_write[SIZE_BUF_FOR_WRITE];
 	unsigned long huffman_codes[SIZE_TABLE];
 	unsigned int amount_of_bits[SIZE_TABLE];
-	fread(&amount, sizeof(int), 1, file);
-	fread(&amount_bits_in_last_var, sizeof(int), 1, file);
-	fread(huffman_codes, sizeof(unsigned long), SIZE_TABLE, file);
-	fread(amount_of_bits, sizeof(unsigned int), SIZE_TABLE, file);
-
-
-	unsigned long maxHuffCode = getMaxHuffmanCode(huffman_codes) * 3;
-	element_st *hash_table = (element_st *)malloc(sizeof(element_st) * maxHuffCode);
-	if (hash_table == NULL)
-		printf("%s\n", "INVALID MEMORY");
-	createHashTable(hash_table, huffman_codes, amount_of_bits, maxHuffCode);
-	
 	unsigned long code[SIZE_BUF_FOR_READ];
-	fread(code, sizeof(unsigned long), SIZE_BUF_FOR_READ, file);
 	
-	FILE *out = fopen(output_file, "wb");
+	fread(&amount, sizeof(int), 1, file);					// amount of blocks
+	fread(&amount_bits_in_last_var, sizeof(int), 1, file);			// amount significant bits in last block
+	fread(huffman_codes, sizeof(unsigned long), SIZE_TABLE, file);		// array with huffman codes
+	fread(amount_of_bits, sizeof(unsigned int), SIZE_TABLE, file);		// array with amount of significant bits
 
-	int counter = 1, counterOfLast = 0;
-	int symbol = 0;
+	unsigned long max_huff_code = get_max_huffman_code(huffman_codes) * 3;	// maximum value of huffman code * 3
+
+	element_st *hash_table = (element_st *)malloc(sizeof(element_st) * max_huff_code);
+
+	if (hash_table == NULL) {
+		printf("%s\n", "INVALID ALLOC MEMORY");
+		return;
+	}
+
+	createHashTable(hash_table, huffman_codes, amount_of_bits, max_huff_code);
+	
+	fread(code, sizeof(unsigned long), SIZE_BUF_FOR_READ, file);		// read code from input file
+	
+	int counter = 1, counter_of_last = 0, symbol = 0, success_bit = 0, count = 0, count_global = 0, end_of_block = 0;
 	unsigned long tempCode = 0, last_code = 0;
-	int success_bit = 0;
-	int count = 0, countGlobal = 0;
 
-	int endOfStruct = 0;
-	int flag1 = 1;
+	int shift_last_block_flag = 1;
 	do
 	{
-		if (countGlobal == amount - 1 && flag1 == 1)
+		if (count_global == amount - 1 && shift_last_block_flag == 1)
 		{
 			code[count] = code[count] << (64 - amount_bits_in_last_var);
-			flag1 = 0;
+			shift_last_block_flag = 0;
 		}
 		tempCode = 0;
-		if (endOfStruct)
+		if (end_of_block)
 		{
 			tempCode |= last_code;
 			tempCode = tempCode << counter;
@@ -158,21 +158,21 @@ void parse_code(char* input_file, char* output_file)
 		}
 		else
 		{
-			counterOfLast = 0;
+			counter_of_last = 0;
 		}
 
 		tempCode |= ((code[count] << success_bit) >> (64 - counter));
-		symbol = binary_search(tempCode, counter + counterOfLast, hash_table);
+		symbol = binary_search(tempCode, counter + counter_of_last, hash_table);
 		if (symbol == -1)
 		{
 
 			if ((counter + success_bit) == 64)
 			{
-				endOfStruct = 1;
+				end_of_block = 1;
 				last_code = ((code[count] << success_bit) >> (64 - counter));
-				counterOfLast = counter;
+				counter_of_last = counter;
 				counter = 0;
-				countGlobal++;
+				count_global++;
 				count++;
 				if (count  == SIZE_BUF_FOR_READ)	
 				{
@@ -195,11 +195,11 @@ void parse_code(char* input_file, char* output_file)
 			}
 			success_bit += counter;
 			counter = 1;
-			endOfStruct = 0;
+			end_of_block = 0;
 			if ((counter - 1) + success_bit == 64)
 			{
 				count++;
-				countGlobal++;
+				count_global++;
 				success_bit = 0;
 				if (count == SIZE_BUF_FOR_READ)
 				{
@@ -208,7 +208,7 @@ void parse_code(char* input_file, char* output_file)
 					count = 0;
 				}
 			}
-			if (countGlobal == amount - 1 && success_bit == amount_bits_in_last_var)
+			if (count_global == amount - 1 && success_bit == amount_bits_in_last_var)
 			{
 				fwrite(buffer_for_write, sizeof(unsigned char), count_buffer_for_write, out);
 				break;
