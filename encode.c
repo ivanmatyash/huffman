@@ -4,7 +4,7 @@
 #include <time.h>
 #include <sys/stat.h>
 
-#define SIZE_BUF 10 
+#define SIZE_BUF 200 
 #define SIZE_TABLE 256
 #define SIZE_BUF_FOR_WRITE 500 
 
@@ -106,16 +106,17 @@ void write_code_in_file(char* input_file_name, char* output_file_name, unsigned 
 	
 	unsigned long buffer_for_write[SIZE_BUF_FOR_WRITE] = {0};	
 	unsigned char buffer[SIZE_BUF] = {0};
-
+	
 	long offset = sizeof(int)  + sizeof(int) + sizeof(unsigned long) * SIZE_TABLE + sizeof(unsigned int) * SIZE_TABLE;
 	fseek(output_file, offset, SEEK_SET); 				// place for amount of long variables + amount of last bits +  codes + amount of bits
 
-	int number = 0, counter_bits = 0, amount_of_written= 1;
+	int number = 0, counter_bits = 0, amount_of_written = 1;
 	int end_of_file = 0;
 	
 	while (!end_of_file) {
 		memset(buffer, 0, sizeof(unsigned char) * SIZE_BUF);
-		int amount_read = fread(buffer, sizeof(unsigned char), SIZE_BUF, input_file);
+		int amount_read = 0;
+		amount_read = fread(buffer, sizeof(unsigned char), SIZE_BUF, input_file);
 		if (amount_read < SIZE_BUF) {
 			end_of_file = 1;
 		}
@@ -134,6 +135,7 @@ void write_code_in_file(char* input_file_name, char* output_file_name, unsigned 
 				buffer_for_write[number] = buffer_for_write[number] << (amount_of_significant_bits[buffer[i]] - counter_bits);
 				buffer_for_write[number] = buffer_for_write[number] | (huffman_codes_array[buffer[i]] >> counter_bits);
 				number++;
+				memset(buffer_for_write + number, 0, sizeof(unsigned long));
 				buffer_for_write[number] = buffer_for_write[number] | ((huffman_codes_array[buffer[i]] << (64 - counter_bits)) >> (64 - counter_bits));
 				amount_of_written++;
 			} else {
@@ -148,7 +150,7 @@ void write_code_in_file(char* input_file_name, char* output_file_name, unsigned 
 			continue;
 		}
 	
-		if (number >= SIZE_BUF_FOR_WRITE - 10) {						// if buffer is overflow
+		if (number >= SIZE_BUF_FOR_WRITE - 3) {
 			fwrite(buffer_for_write, sizeof(unsigned long), number, output_file);
 			fflush(output_file);
 			unsigned long temp = buffer_for_write[number];
@@ -181,6 +183,7 @@ void encode(char* input_file, char* output_file)
 	heap* h = create_heap(SIZE_TABLE);								// create heap for huffman tree	
 	get_huffman_tree(h, array_heap_nodes, array_freq);						// build huffman tree (linkes)
 	painting_huffman_tree(h, huffman_codes_array, amount_of_significant_bits);			// get huffman codes and amounts of significant bits
+
 	write_code_in_file(input_file, output_file, huffman_codes_array, amount_of_significant_bits);	// coding symbols and writing code in output file
 
 	delete_heap(h);
