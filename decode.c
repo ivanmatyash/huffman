@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <sys/stat.h>
 
 #define SIZE_TABLE 256
 #define SIZE_BUF_FOR_READ 10000
@@ -13,7 +14,7 @@ typedef struct element{
 	unsigned long huffman_code;
 	struct element* next;
 } element_st;
-
+/*
 void showArray(unsigned int* array, unsigned long *ar,  int size)
 {
 	printf("\n\nSHOW ARRAY CHAR\n\n");
@@ -22,7 +23,7 @@ void showArray(unsigned int* array, unsigned long *ar,  int size)
 		printf("%d: %lu - %d\n", i, ar[i], array[i]);
 	}
 }
-
+*/
 int compare(const void *s1, const void *s2)
 {
 	element_st *e1 = (element_st *)s1;
@@ -90,7 +91,7 @@ unsigned long getMaxHuffmanCode(unsigned long *HUFFMAN_CODES)
 		}
 	}
 
-	printf("SIZE HASH: %lu\n", max);
+//	printf("SIZE HASH: %lu\n", max);
 	return max;
 }
 
@@ -132,22 +133,22 @@ void createHashTable(element_st *HASH_TABLE, unsigned long *HUFFMAN_CODES, unsig
 
 	//element_st ee = *(HASH_TABLE[2].next);
 	//printf("hash: symbol - %d, amount - %u, huff - %lu\n", ee.symbol, ee.amount_of_bits, ee.huffman_code);
-	for (int i = 0; i < maxHuffCode; i++)
-	{
-		if (HASH_TABLE[i].symbol != -1)
-			printf("hash: i = %d, symbol - %d, amount - %u, huff - %lu\n", i, HASH_TABLE[i].symbol, HASH_TABLE[i].amount_of_bits, HASH_TABLE[i].huffman_code);
-	}
+	//for (int i = 0; i < maxHuffCode; i++)
+//	{
+//		if (HASH_TABLE[i].symbol != -1)
+		//	printf("hash: i = %d, symbol - %d, amount - %u, huff - %lu\n", i, HASH_TABLE[i].symbol, HASH_TABLE[i].amount_of_bits, HASH_TABLE[i].huffman_code);
+//	}
 
 }
 
-void parse_code(char* fileName)
+void parse_code(char* input_file, char* output_file)
 {
 
 	unsigned char buffer_for_write[SIZE_BUF_FOR_WRITE];
 
 //	element_st elementArray[SIZE_TABLE];	
 
-	FILE * file = fopen(fileName, "rb");
+	FILE * file = fopen(input_file, "rb");
 
 	int amount = 0;
 	int amountBitsInLastVar = 0;
@@ -161,7 +162,7 @@ void parse_code(char* fileName)
 	fread(AMOUNT_OF_BITS, sizeof(unsigned int), SIZE_TABLE, file);
 	//showArray(AMOUNT_OF_BITS, HUFFMAN_CODES, SIZE_TABLE);
 
-	printf("amount = %d\n", amount);
+	//printf("amount = %d\n", amount);
 
 /*	for (int i = 0; i < SIZE_TABLE; i++)
 	{
@@ -177,17 +178,18 @@ void parse_code(char* fileName)
 */
 
 	unsigned long maxHuffCode = getMaxHuffmanCode(HUFFMAN_CODES) * 3;
-	element_st HASH_TABLE[maxHuffCode];
-	printf("%s\n", "t");
+	element_st *HASH_TABLE = (element_st *)malloc(sizeof(element_st) * maxHuffCode);
+	if (HASH_TABLE == NULL)
+		printf("%s\n", "INVALID MEMORY");
 	createHashTable(HASH_TABLE, HUFFMAN_CODES, AMOUNT_OF_BITS, maxHuffCode);
 	
 	//printf ("%d\n", elementArray[255].huffman_code);
-	printf("amount = %d\n", amount);
-	printf("bits = %d\n", amountBitsInLastVar);
+//	printf("amount = %d\n", amount);
+	//printf("bits = %d\n", amountBitsInLastVar);
 	unsigned long code[SIZE_BUF_FOR_READ];
 	fread(code, sizeof(unsigned long), SIZE_BUF_FOR_READ, file);
 	
-	FILE *out = fopen("decode.txt", "wb");
+	FILE *out = fopen(output_file, "wb");
 
 	/*for (int i = 0; i < SIZE_TABLE; i++)
 	{
@@ -208,7 +210,6 @@ void parse_code(char* fileName)
 	{
 		if (countGlobal == amount - 1 && flag1 == 1)
 		{
-			printf("%s %d\n", "kuku", countGlobal);
 			code[count] = code[count] << (64 - amountBitsInLastVar);
 			flag1 = 0;
 		}
@@ -283,26 +284,29 @@ void parse_code(char* fileName)
 			}
 		}
 	} while(1);
-	printf("buf = %d\n", countBufferForWrite);
+	//printf("buf = %d\n", countBufferForWrite);
 
 	fflush(out);	
 //	printf("%d\n", sizeof(tempCode));
 
 	fclose(out);
 	fclose(file);
+	free(HASH_TABLE);
 }
 
-int main(void)
+void decode(char* input_file, char* output_file)
 {
-	printf("%zu\n", sizeof(element_st));
 	clock_t start_time = clock();
-	parse_code("out.bin");
+	parse_code(input_file, output_file);
 
 	clock_t end_time = clock();
 	printf("time of decoding: %lf\n",((double) end_time - start_time) / CLOCKS_PER_SEC);
 
+	struct stat st;
+	stat(output_file, &st);
+	int size = st.st_size;
+	printf("Size of decompress-file: %d\n", size);
 	//for (int i = 0; i < amount; i++)	
 	//	printf("%lu\n", buffer_zip[i]);
 	
-	return 0;
 }
