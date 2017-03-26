@@ -171,16 +171,16 @@ void encode(char* input_file, char* output_file)
 {
 	clock_t start_time = clock();
 	
-	int array_freq[SIZE_TABLE] = {0};
-	heap_node array_heap_nodes[SIZE_TABLE * 3];
-	unsigned long huffman_codes_array[SIZE_TABLE];
-	unsigned int amount_of_significant_bits[SIZE_TABLE];
+	int array_freq[SIZE_TABLE] = {0};			// array for frequency of symbols in input file
+	heap_node array_heap_nodes[SIZE_TABLE * 3];		// array of nodes for building huffman tree					
+	unsigned long huffman_codes_array[SIZE_TABLE];		// array for huffman codes
+	unsigned int amount_of_significant_bits[SIZE_TABLE];	// array for amounts of significant bits
 
-	get_frequency(input_file, array_freq);		// get frequency of symbols in input file
-	heap* h = create_heap(SIZE_TABLE);		// create heap for huffman tree	
-	get_huffman_tree(h, array_heap_nodes, array_freq);		// build huffman tree (linkes)
-	painting_huffman_tree(h, huffman_codes_array, amount_of_significant_bits);		// get huffman codes and amounts of significant bits
-	write_code_in_file(input_file, output_file, huffman_codes_array, amount_of_significant_bits);		// coding symbols and writing code in output file
+	get_frequency(input_file, array_freq);								// get frequency of symbols in input file
+	heap* h = create_heap(SIZE_TABLE);								// create heap for huffman tree	
+	get_huffman_tree(h, array_heap_nodes, array_freq);						// build huffman tree (linkes)
+	painting_huffman_tree(h, huffman_codes_array, amount_of_significant_bits);			// get huffman codes and amounts of significant bits
+	write_code_in_file(input_file, output_file, huffman_codes_array, amount_of_significant_bits);	// coding symbols and writing code in output file
 
 	delete_heap(h);
 	
