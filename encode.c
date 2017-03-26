@@ -121,16 +121,15 @@ void write_code_in_file(char* input_file_name, char* output_file_name, unsigned 
 			end_of_file = 1;
 		}
 
-		for (int i = 0; i < amount_read; i++)
-		{
+		for (int i = 0; i < amount_read; i++) {
 			counter_bits += amount_of_significant_bits[buffer[i]];
-			bool flag = false;
+			bool end_of_block = false;
 			if (counter_bits >= 64)
 			{
 				counter_bits %= 64;
-				flag = true;
+				end_of_block = true;
 			}
-			if (flag)
+			if (end_of_block)
 			{
 				buffer_for_write[number] = buffer_for_write[number] << (amount_of_significant_bits[buffer[i]] - counter_bits);
 				buffer_for_write[number] = buffer_for_write[number] | (huffman_codes_array[buffer[i]] >> counter_bits);
