@@ -67,30 +67,37 @@ void get_huffman_tree(heap* h, heap_node *array_heap_nodes, int *array_freq)
 	create_huffman_tree(h, array_heap_nodes);
 }
 
-void painting_huffman_tree(heap_node *root, unsigned long *huffman_codes_array, unsigned int *amount_of_significant_bits)
+void painting_huffman_tree_recursive(heap_node *root, unsigned long *huffman_codes_array, unsigned int *amount_of_significant_bits)
 {
-	
-	if (root->right != NULL)
-	{
+	if (root->right != NULL) {
 		(root->right)->huffman_code = root->huffman_code << 1;
 		(root->right)->huffman_code = (root->right)->huffman_code | 1;
 		(root->right)->amount_of_significant_bits = root->amount_of_significant_bits + 1;
-		painting_huffman_tree(root->right, huffman_codes_array, amount_of_significant_bits);
+		painting_huffman_tree_recursive(root->right, huffman_codes_array, amount_of_significant_bits);
 	}
 
-	if (root->left != NULL)
-	{
+	if (root->left != NULL)	{
 		(root->left)->huffman_code = root->huffman_code << 1;
 		(root->left)->amount_of_significant_bits = root->amount_of_significant_bits + 1;
-		painting_huffman_tree(root->left, huffman_codes_array, amount_of_significant_bits);
+		painting_huffman_tree_recursive(root->left, huffman_codes_array, amount_of_significant_bits);
 	}
 
-	if (root->left == NULL && root->right == NULL)
-	{
+	if (root->left == NULL && root->right == NULL) {
 		huffman_codes_array[root->value] = root->huffman_code;
 		amount_of_significant_bits[root->value] = root->amount_of_significant_bits;
 	}
+}
 
+void painting_huffman_tree(heap* h, unsigned long *huffman_codes_array, unsigned int *amount_of_significant_bits)
+{
+	heap_node root = remove_min_node_heap(h);
+
+	if (root.left == NULL && root.right == NULL) {
+		huffman_codes_array[root.value] = 0;
+		amount_of_significant_bits[root.value] = 1;
+	} else {
+		painting_huffman_tree_recursive(&root, huffman_codes_array, amount_of_significant_bits);
+	}
 }
 
 void write_code_in_file(char* input_file, char* output_file, unsigned long huffman_codes_array[SIZE_TABLE], unsigned int amount_of_significant_bits[SIZE_TABLE])
@@ -174,19 +181,9 @@ void encode(char* input_file, char* output_file)
 	heap* h = create_heap(SIZE_TABLE);
 	
 	get_huffman_tree(h, array_heap_nodes, array_freq);
-		
-	heap_node root = remove_min_node_heap(h);
-
-	if (root.left == NULL && root.right == NULL)
-	{
-		huffman_codes_array[root.value] = 0;
-		amount_of_significant_bits[root.value] = 1;
-	}
-	else
-	{
-		painting_huffman_tree(&root, huffman_codes_array, amount_of_significant_bits);
-	}
-
+	//	
+	painting_huffman_tree(h, huffman_codes_array, amount_of_significant_bits);
+	
 	write_code_in_file(input_file, output_file, huffman_codes_array, amount_of_significant_bits);
 
 	clock_t end_time = clock();
