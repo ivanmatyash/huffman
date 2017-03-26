@@ -1,6 +1,5 @@
 #include "encode.h"
 #include "heap.h"
-#include <math.h>
 #include <string.h>
 #include <time.h>
 #include <sys/stat.h>
@@ -32,8 +31,8 @@ void get_frequency(char* file_name, int *array_freq)
 	int end_of_file = 1;
 
 	while (end_of_file) {
-		memset(buffer, 0, sizeof(unsigned char) * SIZE_BUF);
-		if (fread(buffer, sizeof(unsigned char), SIZE_BUF, file) < SIZE_BUF) {
+		memset(buffer, 0, sizeof(unsigned char) * SIZE_BUF);				// clean buffer
+		if (fread(buffer, sizeof(unsigned char), SIZE_BUF, file) < SIZE_BUF) {		// read next block from input file
 			end_of_file = 0;
 		}
 		update_freq(array_freq, buffer);
@@ -47,12 +46,12 @@ void create_huffman_tree(heap* h, heap_node *array_heap_nodes)
 	while(h->cur_size > 1) {
 		array_heap_nodes[counter] = remove_min_node_heap(h);
 		counter++;
-		array_heap_nodes[counter] = remove_min_node_heap(h);
-
-		int new_priority = array_heap_nodes[counter-1].priority + array_heap_nodes[counter].priority;
-		unsigned char new_value = array_heap_nodes[counter-1].value + array_heap_nodes[counter].value;
+		array_heap_nodes[counter] = remove_min_node_heap(h);							// get 2 minimum-priority nodes from binary heap
 	
-		insert_node_heap(h, new_priority, new_value, &array_heap_nodes[counter-1], &array_heap_nodes[counter]);
+		int new_priority = array_heap_nodes[counter-1].priority + array_heap_nodes[counter].priority;		// calculate priority for new united node
+		unsigned char new_value = array_heap_nodes[counter-1].value + array_heap_nodes[counter].value;		// calculate value for new united node
+	
+		insert_node_heap(h, new_priority, new_value, &array_heap_nodes[counter-1], &array_heap_nodes[counter]); // insert united node into binary heap
 		counter++;
 	}	
 }
@@ -61,7 +60,7 @@ void get_huffman_tree(heap* h, heap_node *array_heap_nodes, int *array_freq)
 {
 	for (int i = 0; i < SIZE_TABLE; i++) {
 		if (array_freq[i] != 0) {
-			insert_node_heap(h, array_freq[i], i, NULL, NULL);
+			insert_node_heap(h, array_freq[i], i, NULL, NULL);			// make nodes for every symbol and put it into binary heap
 		}
 	}
 	create_huffman_tree(h, array_heap_nodes);
@@ -123,36 +122,33 @@ void write_code_in_file(char* input_file_name, char* output_file_name, unsigned 
 
 		for (int i = 0; i < amount_read; i++) {
 			counter_bits += amount_of_significant_bits[buffer[i]];
+	
 			bool end_of_block = false;
-			if (counter_bits >= 64)
-			{
+	
+			if (counter_bits >= 64) {
 				counter_bits %= 64;
 				end_of_block = true;
 			}
-			if (end_of_block)
-			{
+
+			if (end_of_block) {
 				buffer_for_write[number] = buffer_for_write[number] << (amount_of_significant_bits[buffer[i]] - counter_bits);
 				buffer_for_write[number] = buffer_for_write[number] | (huffman_codes_array[buffer[i]] >> counter_bits);
 				number++;
 				buffer_for_write[number] = buffer_for_write[number] | ((huffman_codes_array[buffer[i]] << (64 - counter_bits)) >> (64 - counter_bits));
 				amount_of_written++;
-					
-			}
-			else {
+			} else {
 				buffer_for_write[number] = buffer_for_write[number] << amount_of_significant_bits[buffer[i]];
 				buffer_for_write[number] = buffer_for_write[number] | huffman_codes_array[buffer[i]];
 			}
 		}
 	
-		if (end_of_file)
-		{
-			fwrite(buffer_for_write, sizeof(unsigned long), number+1, output_file);
+		if (end_of_file) {
+			fwrite(buffer_for_write, sizeof(unsigned long), number + 1, output_file);
 			fflush(output_file);
 			continue;
 		}
 	
-		if (number >= SIZE_BUF_FOR_WRITE - 3)
-		{
+		if (number >= SIZE_BUF_FOR_WRITE - 3) {
 			fwrite(buffer_for_write, sizeof(unsigned long), number, output_file);
 			fflush(output_file);
 			unsigned long temp = buffer_for_write[number];
@@ -161,11 +157,13 @@ void write_code_in_file(char* input_file_name, char* output_file_name, unsigned 
 			number = 0;
 		}
 	}
+
 	fseek(output_file, 0, SEEK_SET);
 	fwrite(&amount_of_written, sizeof(int), 1, output_file);
 	fwrite(&counter_bits, sizeof(int), 1, output_file);
 	fwrite(huffman_codes_array, sizeof(unsigned long), SIZE_TABLE, output_file);
 	fwrite(amount_of_significant_bits, sizeof(unsigned int), SIZE_TABLE, output_file);
+
 	fclose(output_file);
 	fclose(input_file);
 }
