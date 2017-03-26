@@ -72,34 +72,34 @@ void painting_huffman_tree_recursive(heap_node *root, unsigned long *huffman_cod
 		(root->right)->huffman_code = root->huffman_code << 1;
 		(root->right)->huffman_code = (root->right)->huffman_code | 1;
 		(root->right)->amount_of_significant_bits = root->amount_of_significant_bits + 1;
-		painting_huffman_tree_recursive(root->right, huffman_codes_array, amount_of_significant_bits);
+		painting_huffman_tree_recursive(root->right, huffman_codes_array, amount_of_significant_bits);	// go right -> concate 1 bit
 	}
 
 	if (root->left != NULL)	{
 		(root->left)->huffman_code = root->huffman_code << 1;
 		(root->left)->amount_of_significant_bits = root->amount_of_significant_bits + 1;
-		painting_huffman_tree_recursive(root->left, huffman_codes_array, amount_of_significant_bits);
+		painting_huffman_tree_recursive(root->left, huffman_codes_array, amount_of_significant_bits);	// go left -> concate 0 bit
 	}
 
 	if (root->left == NULL && root->right == NULL) {
 		huffman_codes_array[root->value] = root->huffman_code;
-		amount_of_significant_bits[root->value] = root->amount_of_significant_bits;
+		amount_of_significant_bits[root->value] = root->amount_of_significant_bits;			// if node is list - then write huffman code for this node
 	}
 }
 
 void painting_huffman_tree(heap* h, unsigned long *huffman_codes_array, unsigned int *amount_of_significant_bits)
 {
-	heap_node root = remove_min_node_heap(h);
+	heap_node root = remove_min_node_heap(h);		// get the root of huffman tree
 
-	if (root.left == NULL && root.right == NULL) {
+	if (root.left == NULL && root.right == NULL) {		// case where only one symbol in input file
 		huffman_codes_array[root.value] = 0;
 		amount_of_significant_bits[root.value] = 1;
 	} else {
-		painting_huffman_tree_recursive(&root, huffman_codes_array, amount_of_significant_bits);
+		painting_huffman_tree_recursive(&root, huffman_codes_array, amount_of_significant_bits);	// if in input file more than 1 symbol, recursive get huffman codes
 	}
 }
 
-void write_code_in_file(char* input_file_name, char* output_file_name, unsigned long huffman_codes_array[SIZE_TABLE], unsigned int amount_of_significant_bits[SIZE_TABLE])
+void write_code_in_file(char* input_file_name, char* output_file_name, unsigned long *huffman_codes_array, unsigned int *amount_of_significant_bits)
 {
 	FILE *input_file = fopen(input_file_name, "rb");
 	FILE *output_file = fopen(output_file_name, "wb");
