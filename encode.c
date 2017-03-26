@@ -19,58 +19,58 @@ void showArray(unsigned int* array, unsigned long *ar,  int size)
 	}
 }
 
-void updateFreq(int* array_f, unsigned char *buffer)
+void update_freq(int* array_freq, unsigned char *buffer)
 {
 	for (int i = 0; i < SIZE_BUF; i++)
 	{
-			array_f[buffer[i]]++;
+			array_freq[buffer[i]]++;
 	}
 }
 
-void getFrequency(char* fileName, int *array_f)
+void get_frequency(char* file_name, int *array_freq)
 {
 	unsigned char buffer[SIZE_BUF] = {0};
-	int endOfFile = 1;
-	FILE* file = fopen(fileName, "rb");
-	while (endOfFile)
+	int end_of_file = 1;
+	FILE* file = fopen(file_name, "rb");
+	while (end_of_file)
 	{
 		memset(buffer, 0, sizeof(unsigned char) * SIZE_BUF);
 		if (fread(buffer, sizeof(unsigned char), SIZE_BUF, file) < SIZE_BUF)
 		{
-			endOfFile = 0;
+			end_of_file = 0;
 		}
-		updateFreq(array_f, buffer);
+		update_freq(array_freq, buffer);
 	}
 	fclose(file);
 	
 }
 
-void createHuffmanTree(heap* h, heap_node arrayHeapNodes[SIZE_TABLE * 3])
+void createHuffmanTree(heap* h, heap_node array_heap_nodes[SIZE_TABLE * 3])
 {
 	int counter = 0;
 	while(h->cur_size >1)
 	{
-		arrayHeapNodes[counter] = remove_min_node_heap(h);
+		array_heap_nodes[counter] = remove_min_node_heap(h);
 		counter++;
-		arrayHeapNodes[counter] = remove_min_node_heap(h);
+		array_heap_nodes[counter] = remove_min_node_heap(h);
 //		printf("%d - %c - %d: %d - %c - %d\n\n", arrayHeapNodes[counter-1].priority, arrayHeapNodes[counter-1].value,arrayHeapNodes[counter-1].value, arrayHeapNodes[counter].priority, arrayHeapNodes[counter].value, arrayHeapNodes[counter].value);
-		insert_node_heap(h, arrayHeapNodes[counter-1].priority + arrayHeapNodes[counter].priority, arrayHeapNodes[counter-1].value + arrayHeapNodes[counter].value, &arrayHeapNodes[counter-1], &arrayHeapNodes[counter]);
+		insert_node_heap(h, array_heap_nodes[counter-1].priority + array_heap_nodes[counter].priority, array_heap_nodes[counter-1].value + array_heap_nodes[counter].value, &array_heap_nodes[counter-1], &array_heap_nodes[counter]);
 		counter++;
 	}	
 }
 
-void getHuffmanTree(heap* h, heap_node arrayHeapNodes[SIZE_TABLE * 3], int array_f[SIZE_TABLE])
+void getHuffmanTree(heap* h, heap_node *array_heap_nodes, int *array_freq)
 {
 	for (int i = 0; i < SIZE_TABLE; i++)
 	{
-		if (array_f[i] != 0)
+		if (array_freq[i] != 0)
 		{
-			insert_node_heap(h, array_f[i], i, NULL, NULL);
+			insert_node_heap(h, array_freq[i], i, NULL, NULL);
 		}
 
 	}
 	//printf("cur size = %d | %d", h->curSize, h->maxSize);
-	createHuffmanTree(h, arrayHeapNodes);
+	createHuffmanTree(h, array_heap_nodes);
 }
 
 void paintingHuffmanTree(heap_node *root, unsigned long HUFFMAN_CODES_ARRAY[SIZE_TABLE], unsigned int AMOUNT_OF_SIGN_BITS[SIZE_TABLE])
@@ -178,17 +178,18 @@ void writeCodeInFile(char* input_file, char* output_file, unsigned long HUFFMAN_
 
 void encode(char* input_file, char* output_file)
 {
-	heap_node *t;
-	printf("size = %zu\n", sizeof(unsigned int));
 	clock_t start_time = clock();
-	int array_f[SIZE_TABLE] = {0};
-	getFrequency(input_file, array_f);
+	
+	int array_freq[SIZE_TABLE] = {0};
+	
+	get_frequency(input_file, array_freq);
+	
 	heap* h = create_heap(SIZE_TABLE);
-	heap_node arrayHeapNodes[SIZE_TABLE * 3];
+	heap_node array_heap_nodes[SIZE_TABLE * 3];
 
 //	showArrayInt(array_f, SIZE_TABLE);
 	
-	getHuffmanTree(h, arrayHeapNodes, array_f);
+	getHuffmanTree(h, array_heap_nodes, array_freq);
 		
 	heap_node root = remove_min_node_heap(h);
 
