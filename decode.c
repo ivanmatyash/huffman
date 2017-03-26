@@ -8,9 +8,10 @@
 #define SIZE_BUF_FOR_WRITE 4096
 
 typedef struct element{
-unsigned char symbol;
-unsigned long huffman_code;
-unsigned int amount_of_bits;
+	int symbol;
+	unsigned int amount_of_bits;
+	unsigned long huffman_code;
+	struct element* next;
 } element_st;
 
 void showArray(unsigned int* array, unsigned long *ar,  int size)
@@ -29,64 +30,114 @@ int compare(const void *s1, const void *s2)
 	return e1->huffman_code - e2->huffman_code;
 }
 
-int binary_search(unsigned long code, element_st* elementArray, unsigned int amount_of_bits, int min, int max)
+int binary_search(unsigned long code, unsigned int amount_of_bits, element_st *HASH_TABLE)
 {
-	/*
-	if (max < min)	
+	
+	if (HASH_TABLE[code].amount_of_bits == 0)
 	{
 		return -1;
-	}
+	}	
 
-	int mid = min + ((max - min) / 2);
+	if (HASH_TABLE[code].symbol != -1)
+	{
+		element_st temp = HASH_TABLE[code];
+		do
+		{
+	
+	//element_st ee = *(HASH_TABLE[2].next);
+	//printf("hash: symbol - %d, amount - %u, huff - %lu\n", ee.symbol, ee.amount_of_bits, ee.huffman_code);
+		
+			int t;
+			//printf("in while: code = %lu bits = %u\n  sym = %d, huff = %lu, bits = %u\n\n", code, amount_of_bits, temp.symbol, temp.huffman_code, temp.amount_of_bits);
+			//scanf("%d", &t);
+			if(temp.amount_of_bits == amount_of_bits)
+			{
+				return temp.symbol;
+			}
+			else
+			{
+				//printf("%s", "zahod");
+				if (temp.next == NULL)
+				{
+					return -1;
+				}
+				else
+				{
+					temp = *(temp.next);
+				}
+			}
+		}while(1);
+	}
+	else
+	{
+		return -1;
+	}	
 
-	if (elementArray[mid].huffman_code > code)
-	{
-		return binary_search(code, elementArray, amount_of_bits, min, mid - 1);
-	}
-	else if (elementArray[mid].huffman_code < code)
-	{
-		return binary_search(code, elementArray, amount_of_bits, mid+1, max);
-	}
-	else 
-		return elementArray[mid].symbol;
-	*/
+	//if (HASH_TABLE[code].symbol != -1 && HASH_TABLE[code].amount_of_bits == amount_of_bits)
+	//	return HASH_TABLE[code].symbol;
+	//else
+	//	return -1;
+}
+
+unsigned long getMaxHuffmanCode(unsigned long *HUFFMAN_CODES)
+{
+	unsigned long max = 0;
 	for (int i = 0; i < SIZE_TABLE; i++)
 	{
-		if ((code == elementArray[i].huffman_code) && (amount_of_bits == elementArray[i].amount_of_bits))
-			return elementArray[i].symbol;
+		if (HUFFMAN_CODES[i] > max)
+		{
+			max = HUFFMAN_CODES[i];
+		}
+	}
+
+	printf("SIZE HASH: %lu\n", max);
+	return max;
+}
+
+void createHashTable(element_st *HASH_TABLE, unsigned long *HUFFMAN_CODES, unsigned int *AMOUNT_OF_BITS, unsigned long maxHuffCode)
+{
+	for (int i = 0; i < maxHuffCode; i++)
+	{
+		HASH_TABLE[i].symbol = -1;
+		HASH_TABLE[i].amount_of_bits = 0;
+		HASH_TABLE[i].huffman_code = 0;
+		HASH_TABLE[i].next = NULL;
 	}
 	
-	return -1;
-	/*if (code == 0 && amount_of_bits == 2)
+	unsigned long counterForCollisions = maxHuffCode / 2;	
+	
+	for (int i = 0; i < SIZE_TABLE; i++)
 	{
-		return 98;
+		if (AMOUNT_OF_BITS[i] != 0)
+		{
+			if (HASH_TABLE[HUFFMAN_CODES[i]].symbol == -1)
+			{
+				HASH_TABLE[HUFFMAN_CODES[i]].symbol = i;
+				HASH_TABLE[HUFFMAN_CODES[i]].amount_of_bits = AMOUNT_OF_BITS[i];
+				HASH_TABLE[HUFFMAN_CODES[i]].huffman_code = HUFFMAN_CODES[i];
+				HASH_TABLE[HUFFMAN_CODES[i]].next = NULL;
+			}
+		
+			else
+			{	HASH_TABLE[counterForCollisions] = HASH_TABLE[HUFFMAN_CODES[i]];
+				HASH_TABLE[HUFFMAN_CODES[i]].symbol = i;
+				HASH_TABLE[HUFFMAN_CODES[i]].amount_of_bits = AMOUNT_OF_BITS[i];
+				HASH_TABLE[HUFFMAN_CODES[i]].huffman_code = HUFFMAN_CODES[i];
+				HASH_TABLE[HUFFMAN_CODES[i]].next = &HASH_TABLE[counterForCollisions];
+				counterForCollisions++;
+			}
+		} 
 	}
-	else if(code == 3 && amount_of_bits == 2)
+
+
+	//element_st ee = *(HASH_TABLE[2].next);
+	//printf("hash: symbol - %d, amount - %u, huff - %lu\n", ee.symbol, ee.amount_of_bits, ee.huffman_code);
+	for (int i = 0; i < maxHuffCode; i++)
 	{
-		return 101;
+		if (HASH_TABLE[i].symbol != -1)
+			printf("hash: i = %d, symbol - %d, amount - %u, huff - %lu\n", i, HASH_TABLE[i].symbol, HASH_TABLE[i].amount_of_bits, HASH_TABLE[i].huffman_code);
 	}
-	else if (code == 4 && amount_of_bits == 3)
-	{
-		return 32;
-	}
-	else if (code == 10 && amount_of_bits == 4)
-	{
-		return 33;
-	}
-	else if (code == 2 && amount_of_bits == 3)
-	{
-		return 111;
-	}
-	else if (code == 3 && amount_of_bits == 3)
-	{
-		return 112;
-	}
-	else if (code == 11 && amount_of_bits == 4)
-	{
-		return 114;
-	}
-	else return -1;
-	*/
+
 }
 
 void parse_code(char* fileName)
@@ -94,7 +145,7 @@ void parse_code(char* fileName)
 
 	unsigned char buffer_for_write[SIZE_BUF_FOR_WRITE];
 
-	element_st elementArray[SIZE_TABLE];	
+//	element_st elementArray[SIZE_TABLE];	
 
 	FILE * file = fopen(fileName, "rb");
 
@@ -112,21 +163,30 @@ void parse_code(char* fileName)
 
 	printf("amount = %d\n", amount);
 
-	for (int i = 0; i < SIZE_TABLE; i++)
+/*	for (int i = 0; i < SIZE_TABLE; i++)
 	{
 		elementArray[i].symbol = i;
 		elementArray[i].huffman_code = HUFFMAN_CODES[i];
 		elementArray[i].amount_of_bits = AMOUNT_OF_BITS[i];
+		elementArray[i].next = NULL;
 	}
 	
 	qsort(elementArray, SIZE_TABLE, sizeof(element_st), compare);
+
+	int maxCode = elementArray[SIZE_TABLE - 1].huffman_code;
+*/
+
+	unsigned long maxHuffCode = getMaxHuffmanCode(HUFFMAN_CODES) * 3;
+	element_st HASH_TABLE[maxHuffCode];
+	printf("%s\n", "t");
+	createHashTable(HASH_TABLE, HUFFMAN_CODES, AMOUNT_OF_BITS, maxHuffCode);
+	
 	//printf ("%d\n", elementArray[255].huffman_code);
 	printf("amount = %d\n", amount);
 	printf("bits = %d\n", amountBitsInLastVar);
 	unsigned long code[SIZE_BUF_FOR_READ];
 	fread(code, sizeof(unsigned long), SIZE_BUF_FOR_READ, file);
 	
-	printf ("%s\n", "test");
 	FILE *out = fopen("decode.txt", "wb");
 
 	/*for (int i = 0; i < SIZE_TABLE; i++)
@@ -142,7 +202,6 @@ void parse_code(char* fileName)
 	int count = 0, countGlobal = 0;
 
 	int endOfStruct = 0;
-
 	int flag1 = 1;
 	//int ggg = 0;
 	do
@@ -167,7 +226,7 @@ void parse_code(char* fileName)
 
 		tempCode |= ((code[count] << success_bit) >> (64 - counter));
 		//printf("code: %lu\n", tempCode);
-		symbol = binary_search(tempCode, elementArray, counter + counterOfLast, 0, SIZE_TABLE - 1);
+		symbol = binary_search(tempCode, counter + counterOfLast, HASH_TABLE);
 		if (symbol == -1)
 		{
 
@@ -235,7 +294,7 @@ void parse_code(char* fileName)
 
 int main(void)
 {
-
+	printf("%zu\n", sizeof(element_st));
 	clock_t start_time = clock();
 	parse_code("out.bin");
 
