@@ -1,3 +1,3 @@
 #pragma once
 
-void encode(char*);
+void encode(char*, char*);
