@@ -102,7 +102,7 @@ void painting_huffman_tree(heap* h, unsigned long *huffman_codes_array, unsigned
 
 void write_code_in_file(char* input_file, char* output_file, unsigned long huffman_codes_array[SIZE_TABLE], unsigned int amount_of_significant_bits[SIZE_TABLE])
 {
-	unsigned long bufferForWrite[SIZE_BUF_FOR_WRITE] = {0};	
+	unsigned long buffer_for_write[SIZE_BUF_FOR_WRITE] = {0};	
 	unsigned char buffer[SIZE_BUF] = {0};
 	int endOfFile = 1;
 	FILE* file = fopen(input_file, "rb");
@@ -128,33 +128,33 @@ void write_code_in_file(char* input_file, char* output_file, unsigned long huffm
 			}
 			if (flag)
 			{
-				bufferForWrite[number] = bufferForWrite[number] << (amount_of_significant_bits[buffer[i]] - counterBits);
-				bufferForWrite[number] = bufferForWrite[number] | (huffman_codes_array[buffer[i]] >> counterBits);
+				buffer_for_write[number] = buffer_for_write[number] << (amount_of_significant_bits[buffer[i]] - counterBits);
+				buffer_for_write[number] = buffer_for_write[number] | (huffman_codes_array[buffer[i]] >> counterBits);
 				number++;
-				bufferForWrite[number] = bufferForWrite[number] | ((huffman_codes_array[buffer[i]] << (64 - counterBits)) >> (64 - counterBits));
+				buffer_for_write[number] = buffer_for_write[number] | ((huffman_codes_array[buffer[i]] << (64 - counterBits)) >> (64 - counterBits));
 				amount_of_w++;
 					
 			}
 			else {
-				bufferForWrite[number] = bufferForWrite[number] << amount_of_significant_bits[buffer[i]];
-				bufferForWrite[number] = bufferForWrite[number] | huffman_codes_array[buffer[i]];
+				buffer_for_write[number] = buffer_for_write[number] << amount_of_significant_bits[buffer[i]];
+				buffer_for_write[number] = buffer_for_write[number] | huffman_codes_array[buffer[i]];
 			}
 		}
 	
 		if (!endOfFile)
 		{
-			fwrite(bufferForWrite, sizeof(unsigned long), number+1, fileOut);
+			fwrite(buffer_for_write, sizeof(unsigned long), number+1, fileOut);
 			fflush(fileOut);
 			continue;
 		}
 	
 		if (number >= SIZE_BUF_FOR_WRITE - 3)
 		{
-			fwrite(bufferForWrite, sizeof(unsigned long), number, fileOut);
+			fwrite(buffer_for_write, sizeof(unsigned long), number, fileOut);
 			fflush(fileOut);
-			unsigned long temp = bufferForWrite[number];
-			memset(bufferForWrite, 0, sizeof(unsigned long) * SIZE_BUF_FOR_WRITE);
-			bufferForWrite[0] = temp;
+			unsigned long temp = buffer_for_write[number];
+			memset(buffer_for_write, 0, sizeof(unsigned long) * SIZE_BUF_FOR_WRITE);
+			buffer_for_write[0] = temp;
 			number = 0;
 		}
 	}
