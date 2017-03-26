@@ -41,32 +41,33 @@ void get_frequency(char* file_name, int *array_freq)
 	fclose(file);
 }
 
-void create_huffman_tree(heap* h, heap_node array_heap_nodes[SIZE_TABLE * 3])
+void create_huffman_tree(heap* h, heap_node *array_heap_nodes)
 {
 	int counter = 0;
 	while(h->cur_size > 1) {
 		array_heap_nodes[counter] = remove_min_node_heap(h);
 		counter++;
 		array_heap_nodes[counter] = remove_min_node_heap(h);
-		insert_node_heap(h, array_heap_nodes[counter-1].priority + array_heap_nodes[counter].priority, array_heap_nodes[counter-1].value + array_heap_nodes[counter].value, &array_heap_nodes[counter-1], &array_heap_nodes[counter]);
+
+		int new_priority = array_heap_nodes[counter-1].priority + array_heap_nodes[counter].priority;
+		unsigned char new_value = array_heap_nodes[counter-1].value + array_heap_nodes[counter].value;
+	
+		insert_node_heap(h, new_priority, new_value, &array_heap_nodes[counter-1], &array_heap_nodes[counter]);
 		counter++;
 	}	
 }
 
 void get_huffman_tree(heap* h, heap_node *array_heap_nodes, int *array_freq)
 {
-	for (int i = 0; i < SIZE_TABLE; i++)
-	{
-		if (array_freq[i] != 0)
-		{
+	for (int i = 0; i < SIZE_TABLE; i++) {
+		if (array_freq[i] != 0) {
 			insert_node_heap(h, array_freq[i], i, NULL, NULL);
 		}
-
 	}
 	create_huffman_tree(h, array_heap_nodes);
 }
 
-void painting_huffman_tree(heap_node *root, unsigned long huffman_codes_array[SIZE_TABLE], unsigned int amount_of_significant_bits[SIZE_TABLE])
+void painting_huffman_tree(heap_node *root, unsigned long *huffman_codes_array, unsigned int *amount_of_significant_bits)
 {
 	
 	if (root->right != NULL)
