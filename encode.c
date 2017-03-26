@@ -111,32 +111,32 @@ void write_code_in_file(char* input_file_name, char* output_file_name, unsigned 
 	long offset = sizeof(int)  + sizeof(int) + sizeof(unsigned long) * SIZE_TABLE + sizeof(unsigned int) * SIZE_TABLE;
 	fseek(output_file, offset, SEEK_SET); // place for amount of long variables + amount of last bits +  codes + amount of bits
 
-	int number = 0, counterBits = 0, amount_of_w = 1;
-	int endOfFile = 1;
-	while (endOfFile)
-	{
+	int number = 0, counter_bits = 0, amount_of_written= 1;
+	int end_of_file = 0;
+	
+	while (!end_of_file) {
 		memset(buffer, 0, sizeof(unsigned char) * SIZE_BUF);
 		int amount_read = fread(buffer, sizeof(unsigned char), SIZE_BUF, input_file);
-		if (amount_read < SIZE_BUF)
-		{
-			endOfFile = 0;
+		if (amount_read < SIZE_BUF) {
+			end_of_file = 1;
 		}
+
 		for (int i = 0; i < amount_read; i++)
 		{
-			counterBits += amount_of_significant_bits[buffer[i]];
+			counter_bits += amount_of_significant_bits[buffer[i]];
 			bool flag = false;
-			if (counterBits >= 64)
+			if (counter_bits >= 64)
 			{
-				counterBits = counterBits % 64;
+				counter_bits %= 64;
 				flag = true;
 			}
 			if (flag)
 			{
-				buffer_for_write[number] = buffer_for_write[number] << (amount_of_significant_bits[buffer[i]] - counterBits);
-				buffer_for_write[number] = buffer_for_write[number] | (huffman_codes_array[buffer[i]] >> counterBits);
+				buffer_for_write[number] = buffer_for_write[number] << (amount_of_significant_bits[buffer[i]] - counter_bits);
+				buffer_for_write[number] = buffer_for_write[number] | (huffman_codes_array[buffer[i]] >> counter_bits);
 				number++;
-				buffer_for_write[number] = buffer_for_write[number] | ((huffman_codes_array[buffer[i]] << (64 - counterBits)) >> (64 - counterBits));
-				amount_of_w++;
+				buffer_for_write[number] = buffer_for_write[number] | ((huffman_codes_array[buffer[i]] << (64 - counter_bits)) >> (64 - counter_bits));
+				amount_of_written++;
 					
 			}
 			else {
@@ -145,7 +145,7 @@ void write_code_in_file(char* input_file_name, char* output_file_name, unsigned 
 			}
 		}
 	
-		if (!endOfFile)
+		if (end_of_file)
 		{
 			fwrite(buffer_for_write, sizeof(unsigned long), number+1, output_file);
 			fflush(output_file);
@@ -163,8 +163,8 @@ void write_code_in_file(char* input_file_name, char* output_file_name, unsigned 
 		}
 	}
 	fseek(output_file, 0, SEEK_SET);
-	fwrite(&amount_of_w, sizeof(int), 1, output_file);
-	fwrite(&counterBits, sizeof(int), 1, output_file);
+	fwrite(&amount_of_written, sizeof(int), 1, output_file);
+	fwrite(&counter_bits, sizeof(int), 1, output_file);
 	fwrite(huffman_codes_array, sizeof(unsigned long), SIZE_TABLE, output_file);
 	fwrite(amount_of_significant_bits, sizeof(unsigned int), SIZE_TABLE, output_file);
 	fclose(output_file);
