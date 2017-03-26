@@ -108,7 +108,7 @@ void write_code_in_file(char* input_file_name, char* output_file_name, unsigned 
 	unsigned char buffer[SIZE_BUF] = {0};
 
 	long offset = sizeof(int)  + sizeof(int) + sizeof(unsigned long) * SIZE_TABLE + sizeof(unsigned int) * SIZE_TABLE;
-	fseek(output_file, offset, SEEK_SET); // place for amount of long variables + amount of last bits +  codes + amount of bits
+	fseek(output_file, offset, SEEK_SET); 				// place for amount of long variables + amount of last bits +  codes + amount of bits
 
 	int number = 0, counter_bits = 0, amount_of_written= 1;
 	int end_of_file = 0;
@@ -148,7 +148,7 @@ void write_code_in_file(char* input_file_name, char* output_file_name, unsigned 
 			continue;
 		}
 	
-		if (number >= SIZE_BUF_FOR_WRITE - 3) {
+		if (number >= SIZE_BUF_FOR_WRITE - 10) {						// if buffer is overflow
 			fwrite(buffer_for_write, sizeof(unsigned long), number, output_file);
 			fflush(output_file);
 			unsigned long temp = buffer_for_write[number];
