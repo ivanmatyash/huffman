@@ -13,6 +13,7 @@ void showArray(unsigned int* array, unsigned long *ar,  int size)
 	printf("\n\nSHOW ARRAY CHAR\n\n");
 	for (int i = 0; i < size; i++)
 	{
+		if (array[i] != 0)
 		printf("%d: %lu - %d\n", i, ar[i], array[i]);
 	}
 }
@@ -215,7 +216,7 @@ void encode(char* fileName)
 	clock_t end_time = clock();
 
 	printf("time of encoding: %lf\n",((double) end_time - start_time) / CLOCKS_PER_SEC);
-	showArray(AMOUNT_OF_SIGN_BITS, HUFFMAN_CODES_ARRAY, SIZE_TABLE);
+//	showArray(AMOUNT_OF_SIGN_BITS, HUFFMAN_CODES_ARRAY, SIZE_TABLE);
 	delete_heap(h);
 	
 }
