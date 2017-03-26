@@ -104,11 +104,15 @@ void write_code_in_file(char* input_file_name, char* output_file_name, unsigned 
 {
 	FILE *input_file = fopen(input_file_name, "rb");
 	FILE *output_file = fopen(output_file_name, "wb");
+	
 	unsigned long buffer_for_write[SIZE_BUF_FOR_WRITE] = {0};	
 	unsigned char buffer[SIZE_BUF] = {0};
-	int endOfFile = 1;
-	fseek(output_file, sizeof(int)  + sizeof(int) + sizeof(unsigned long) * SIZE_TABLE + sizeof(unsigned int) * SIZE_TABLE, SEEK_SET); // place for amount of long variables + amount of last bits +  codes + amount of bits
+
+	long offset = sizeof(int)  + sizeof(int) + sizeof(unsigned long) * SIZE_TABLE + sizeof(unsigned int) * SIZE_TABLE;
+	fseek(output_file, offset, SEEK_SET); // place for amount of long variables + amount of last bits +  codes + amount of bits
+
 	int number = 0, counterBits = 0, amount_of_w = 1;
+	int endOfFile = 1;
 	while (endOfFile)
 	{
 		memset(buffer, 0, sizeof(unsigned char) * SIZE_BUF);
