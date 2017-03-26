@@ -1,5 +1,4 @@
 #include "heap.h"
-#include <stdio.h>
 
 heap* create_heap(int size)
 {
@@ -7,9 +6,9 @@ heap* create_heap(int size)
 	h = malloc(sizeof(*h));
 	if (h != NULL)
 	{
-		h->maxSize = size;
-		h->curSize = 0;
-		h->nodes = malloc((size + 1) * sizeof(heapNode));
+		h->max_size = size;
+		h->cur_size = 0;
+		h->nodes = malloc((size + 1) * sizeof(heap_node));
 		
 
 		if (h->nodes == NULL)
@@ -28,19 +27,19 @@ void delete_heap(heap* h)
 	free(h);
 }
 
-void swap_nodes_heap(heapNode *a, heapNode *b)
+void swap_nodes_heap(heap_node *a, heap_node *b)
 {
-	heapNode temp;
+	heap_node temp;
 	temp = *a;
 	*a = *b;
 	*b = temp;
 }
 
-heapNode get_min_node_heap(heap* h)
+heap_node get_min_node_heap(heap* h)
 {
-	heapNode invalidNode = {-1, -1};
+	heap_node invalidNode = {-1, -1};
 	
-	if (h->curSize > 0)
+	if (h->cur_size > 0)
 	{
 		return h->nodes[1];
 	}
@@ -51,23 +50,23 @@ heapNode get_min_node_heap(heap* h)
 	}
 }
 
-bool insert_node_heap(heap* h, int priority, unsigned char value, heapNode* leftSon, heapNode* rightSon)
+bool insert_node_heap(heap* h, int priority, unsigned char value, heap_node* leftSon, heap_node* rightSon)
 {
-	if (h->curSize >= h->maxSize)
+	if (h->cur_size >= h->max_size)
 	{
 		fprintf(stderr, "Invalid insert, heap is full!\n");
 		return false;
 	}
 
-	h->curSize++;
-	h->nodes[h->curSize].priority = priority;
-	h->nodes[h->curSize].value = value;
-	h->nodes[h->curSize].left = leftSon;
-	h->nodes[h->curSize].right = rightSon;
-	h->nodes[h->curSize].huffmanCode = 0;
-	h->nodes[h->curSize].amountOfSignificantBits = 0;	
+	h->cur_size++;
+	h->nodes[h->cur_size].priority = priority;
+	h->nodes[h->cur_size].value = value;
+	h->nodes[h->cur_size].left = leftSon;
+	h->nodes[h->cur_size].right = rightSon;
+	h->nodes[h->cur_size].huffman_code = 0;
+	h->nodes[h->cur_size].amount_of_significant_bits = 0;	
 	int i = 0;
-	for (i = h->curSize; i > 1 && h->nodes[i].priority < h->nodes[i / 2].priority; i = i / 2)
+	for (i = h->cur_size; i > 1 && h->nodes[i].priority < h->nodes[i / 2].priority; i = i / 2)
 	{
 		swap_nodes_heap(&h->nodes[i], &h->nodes[i/2]);
 	}
@@ -75,19 +74,19 @@ bool insert_node_heap(heap* h, int priority, unsigned char value, heapNode* left
 	return true;
 }
 
-heapNode remove_min_node_heap(heap *h)
+heap_node remove_min_node_heap(heap *h)
 {
-	if (h->curSize == 0)
+	if (h->cur_size == 0)
 	{
-		heapNode invalidNode = {-1, -1};
+		heap_node invalidNode = {-1, -1};
 		fprintf(stderr, "Invalid removing min. Heap is empty!\n");
 		return invalidNode;
 	}
-	swap_nodes_heap(&h->nodes[1], &h->nodes[h->curSize]);
+	swap_nodes_heap(&h->nodes[1], &h->nodes[h->cur_size]);
 
 	int k, n, j;
 
-	for (k = 1, n = h->curSize - 1; 2 * k <= n; k = j)
+	for (k = 1, n = h->cur_size - 1; 2 * k <= n; k = j)
 	{
 		j = 2 * k;
 		if (j < n && h->nodes[j].priority > h->nodes[j + 1].priority)
@@ -103,5 +102,5 @@ heapNode remove_min_node_heap(heap *h)
 
 		swap_nodes_heap(&h->nodes[k], &h->nodes[j]);
 	}
-	return h->nodes[h->curSize--];
+	return h->nodes[h->cur_size--];
 }
