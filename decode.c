@@ -29,19 +29,13 @@ int binary_search(unsigned long code, unsigned int amount_of_bits, element_st *H
 		do
 		{
 	
-	//element_st ee = *(HASH_TABLE[2].next);
-	//printf("hash: symbol - %d, amount - %u, huff - %lu\n", ee.symbol, ee.amount_of_bits, ee.huffman_code);
-		
 			int t;
-			//printf("in while: code = %lu bits = %u\n  sym = %d, huff = %lu, bits = %u\n\n", code, amount_of_bits, temp.symbol, temp.huffman_code, temp.amount_of_bits);
-			//scanf("%d", &t);
 			if(temp.amount_of_bits == amount_of_bits)
 			{
 				return temp.symbol;
 			}
 			else
 			{
-				//printf("%s", "zahod");
 				if (temp.next == NULL)
 				{
 					return -1;
@@ -57,11 +51,6 @@ int binary_search(unsigned long code, unsigned int amount_of_bits, element_st *H
 	{
 		return -1;
 	}	
-
-	//if (HASH_TABLE[code].symbol != -1 && HASH_TABLE[code].amount_of_bits == amount_of_bits)
-	//	return HASH_TABLE[code].symbol;
-	//else
-	//	return -1;
 }
 
 unsigned long getMaxHuffmanCode(unsigned long *HUFFMAN_CODES)
@@ -75,7 +64,6 @@ unsigned long getMaxHuffmanCode(unsigned long *HUFFMAN_CODES)
 		}
 	}
 
-//	printf("SIZE HASH: %lu\n", max);
 	return max;
 }
 
@@ -115,13 +103,6 @@ void createHashTable(element_st *HASH_TABLE, unsigned long *HUFFMAN_CODES, unsig
 	}
 
 
-	//element_st ee = *(HASH_TABLE[2].next);
-	//printf("hash: symbol - %d, amount - %u, huff - %lu\n", ee.symbol, ee.amount_of_bits, ee.huffman_code);
-	//for (int i = 0; i < maxHuffCode; i++)
-//	{
-//		if (HASH_TABLE[i].symbol != -1)
-		//	printf("hash: i = %d, symbol - %d, amount - %u, huff - %lu\n", i, HASH_TABLE[i].symbol, HASH_TABLE[i].amount_of_bits, HASH_TABLE[i].huffman_code);
-//	}
 
 }
 
@@ -130,7 +111,6 @@ void parse_code(char* input_file, char* output_file)
 
 	unsigned char buffer_for_write[SIZE_BUF_FOR_WRITE];
 
-//	element_st elementArray[SIZE_TABLE];	
 
 	FILE * file = fopen(input_file, "rb");
 
@@ -144,22 +124,7 @@ void parse_code(char* input_file, char* output_file)
 	fread(&amountBitsInLastVar, sizeof(int), 1, file);
 	fread(HUFFMAN_CODES, sizeof(unsigned long), SIZE_TABLE, file);
 	fread(AMOUNT_OF_BITS, sizeof(unsigned int), SIZE_TABLE, file);
-	//showArray(AMOUNT_OF_BITS, HUFFMAN_CODES, SIZE_TABLE);
 
-	//printf("amount = %d\n", amount);
-
-/*	for (int i = 0; i < SIZE_TABLE; i++)
-	{
-		elementArray[i].symbol = i;
-		elementArray[i].huffman_code = HUFFMAN_CODES[i];
-		elementArray[i].amount_of_bits = AMOUNT_OF_BITS[i];
-		elementArray[i].next = NULL;
-	}
-	
-	qsort(elementArray, SIZE_TABLE, sizeof(element_st), compare);
-
-	int maxCode = elementArray[SIZE_TABLE - 1].huffman_code;
-*/
 
 	unsigned long maxHuffCode = getMaxHuffmanCode(HUFFMAN_CODES) * 3;
 	element_st *HASH_TABLE = (element_st *)malloc(sizeof(element_st) * maxHuffCode);
@@ -167,20 +132,11 @@ void parse_code(char* input_file, char* output_file)
 		printf("%s\n", "INVALID MEMORY");
 	createHashTable(HASH_TABLE, HUFFMAN_CODES, AMOUNT_OF_BITS, maxHuffCode);
 	
-	//printf ("%d\n", elementArray[255].huffman_code);
-//	printf("amount = %d\n", amount);
-	//printf("bits = %d\n", amountBitsInLastVar);
 	unsigned long code[SIZE_BUF_FOR_READ];
 	fread(code, sizeof(unsigned long), SIZE_BUF_FOR_READ, file);
 	
 	FILE *out = fopen(output_file, "wb");
 
-	/*for (int i = 0; i < SIZE_TABLE; i++)
-	{
-		printf("Sym: %d code = %lu  bits = %u\n", elementArray[i].symbol, elementArray[i].huffman_code, elementArray[i].amount_of_bits);
-	}*/	
-
-	//code[amount - 1]= code[amount - 1] << (64 - amountBitsInLastVar);
 	int counter = 1, counterOfLast = 0;
 	int symbol = 0;
 	unsigned long tempCode = 0, last_code = 0;
@@ -189,7 +145,6 @@ void parse_code(char* input_file, char* output_file)
 
 	int endOfStruct = 0;
 	int flag1 = 1;
-	//int ggg = 0;
 	do
 	{
 		if (countGlobal == amount - 1 && flag1 == 1)
@@ -210,7 +165,6 @@ void parse_code(char* input_file, char* output_file)
 		}
 
 		tempCode |= ((code[count] << success_bit) >> (64 - counter));
-		//printf("code: %lu\n", tempCode);
 		symbol = binary_search(tempCode, counter + counterOfLast, HASH_TABLE);
 		if (symbol == -1)
 		{
@@ -231,7 +185,6 @@ void parse_code(char* input_file, char* output_file)
 				}
 			}	
 			counter++;
-			//scanf("%d", &ggg);
 			continue;
 		}
 		else
@@ -243,10 +196,8 @@ void parse_code(char* input_file, char* output_file)
 				fwrite(buffer_for_write, sizeof(char), SIZE_BUF_FOR_WRITE, out);
 				countBufferForWrite = 0;
 			}
-			//printf("%c\n", symbol);
 			success_bit += counter;
 			counter = 1;
-			//printf("suc bits: %d\n", success_bit);
 			endOfStruct = 0;
 			if ((counter - 1) + success_bit == 64)
 			{
@@ -260,7 +211,6 @@ void parse_code(char* input_file, char* output_file)
 					count = 0;
 				}
 			}
-			//scanf("%d", &t);
 			if (countGlobal == amount - 1 && success_bit == amountBitsInLastVar)
 			{
 				fwrite(buffer_for_write, sizeof(unsigned char), countBufferForWrite, out);
@@ -268,10 +218,8 @@ void parse_code(char* input_file, char* output_file)
 			}
 		}
 	} while(1);
-	//printf("buf = %d\n", countBufferForWrite);
 
 	fflush(out);	
-//	printf("%d\n", sizeof(tempCode));
 
 	fclose(out);
 	fclose(file);
@@ -290,7 +238,4 @@ void decode(char* input_file, char* output_file)
 	stat(output_file, &st);
 	int size = st.st_size;
 	printf("Size of decompress-file: %d\n", size);
-	//for (int i = 0; i < amount; i++)	
-	//	printf("%lu\n", buffer_zip[i]);
-	
 }
