@@ -4,15 +4,12 @@ heap* create_heap(int size)
 {
 	struct heap *h;
 	h = malloc(sizeof(*h));
-	if (h != NULL)
-	{
+	if (h != NULL) {
 		h->max_size = size;
 		h->cur_size = 0;
 		h->nodes = malloc((size + 1) * sizeof(heap_node));
-		
 
-		if (h->nodes == NULL)
-		{
+		if (h->nodes == NULL) {
 			free(h);
 			return NULL;
 		}
@@ -37,23 +34,19 @@ void swap_nodes_heap(heap_node *a, heap_node *b)
 
 heap_node get_min_node_heap(heap* h)
 {
-	heap_node invalidNode = {-1, -1};
+	heap_node invalid_node = {-1, -1};
 	
-	if (h->cur_size > 0)
-	{
+	if (h->cur_size > 0) {
 		return h->nodes[1];
-	}
-	else
-	{
+	} else {
 		fprintf(stderr, "heap is empty\n");
-		return invalidNode;
+		return invalid_node;
 	}
 }
 
-bool insert_node_heap(heap* h, int priority, unsigned char value, heap_node* leftSon, heap_node* rightSon)
+bool insert_node_heap(heap* h, int priority, unsigned char value, heap_node* left_son, heap_node* right_son)
 {
-	if (h->cur_size >= h->max_size)
-	{
+	if (h->cur_size >= h->max_size)	{
 		fprintf(stderr, "Invalid insert, heap is full!\n");
 		return false;
 	}
@@ -61,13 +54,12 @@ bool insert_node_heap(heap* h, int priority, unsigned char value, heap_node* lef
 	h->cur_size++;
 	h->nodes[h->cur_size].priority = priority;
 	h->nodes[h->cur_size].value = value;
-	h->nodes[h->cur_size].left = leftSon;
-	h->nodes[h->cur_size].right = rightSon;
+	h->nodes[h->cur_size].left = left_son;
+	h->nodes[h->cur_size].right = right_son;
 	h->nodes[h->cur_size].huffman_code = 0;
 	h->nodes[h->cur_size].amount_of_significant_bits = 0;	
-	int i = 0;
-	for (i = h->cur_size; i > 1 && h->nodes[i].priority < h->nodes[i / 2].priority; i = i / 2)
-	{
+	
+	for (int i = h->cur_size; i > 1 && h->nodes[i].priority < h->nodes[i / 2].priority; i = i / 2) {
 		swap_nodes_heap(&h->nodes[i], &h->nodes[i/2]);
 	}
 
@@ -76,31 +68,28 @@ bool insert_node_heap(heap* h, int priority, unsigned char value, heap_node* lef
 
 heap_node remove_min_node_heap(heap *h)
 {
-	if (h->cur_size == 0)
-	{
-		heap_node invalidNode = {-1, -1};
+	if (h->cur_size == 0) {
+		heap_node invalid_node = {-1, -1};
 		fprintf(stderr, "Invalid removing min. Heap is empty!\n");
-		return invalidNode;
+		return invalid_node;
 	}
+
 	swap_nodes_heap(&h->nodes[1], &h->nodes[h->cur_size]);
 
-	int k, n, j;
+	int k = 0, n = 0, j = 0;
 
-	for (k = 1, n = h->cur_size - 1; 2 * k <= n; k = j)
-	{
+	for (k = 1, n = h->cur_size - 1; 2 * k <= n; k = j) {
 		j = 2 * k;
-		if (j < n && h->nodes[j].priority > h->nodes[j + 1].priority)
-		{
+		if (j < n && h->nodes[j].priority > h->nodes[j + 1].priority) {
 			j++;
 		}
 	
-	
-		if (h->nodes[k].priority <= h->nodes[j].priority)
-		{
+		if (h->nodes[k].priority <= h->nodes[j].priority) {
 			break;
 		}
 
 		swap_nodes_heap(&h->nodes[k], &h->nodes[j]);
 	}
+
 	return h->nodes[h->cur_size--];
 }
