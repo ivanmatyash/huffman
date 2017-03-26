@@ -176,23 +176,21 @@ void encode(char* input_file, char* output_file)
 	unsigned long huffman_codes_array[SIZE_TABLE];
 	unsigned int amount_of_significant_bits[SIZE_TABLE];
 
-	get_frequency(input_file, array_freq);
-	
-	heap* h = create_heap(SIZE_TABLE);
-	
-	get_huffman_tree(h, array_heap_nodes, array_freq);
-	//	
-	painting_huffman_tree(h, huffman_codes_array, amount_of_significant_bits);
-	
-	write_code_in_file(input_file, output_file, huffman_codes_array, amount_of_significant_bits);
+	get_frequency(input_file, array_freq);		// get frequency of symbols in input file
+	heap* h = create_heap(SIZE_TABLE);		// create heap for huffman tree	
+	get_huffman_tree(h, array_heap_nodes, array_freq);		// build huffman tree (linkes)
+	painting_huffman_tree(h, huffman_codes_array, amount_of_significant_bits);		// get huffman codes and amounts of significant bits
+	write_code_in_file(input_file, output_file, huffman_codes_array, amount_of_significant_bits);		// coding symbols and writing code in output file
 
+	delete_heap(h);
+	
 	clock_t end_time = clock();
-
+	
 	printf("time of encoding: %lf\n",((double) end_time - start_time) / CLOCKS_PER_SEC);
 	struct stat st;
 	stat(input_file, &st);
 	int size = st.st_size;
 	printf("Size of input file: %d\n", size);
-	delete_heap(h);
+
 	
 }
