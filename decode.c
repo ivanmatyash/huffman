@@ -14,22 +14,6 @@ typedef struct element{
 	unsigned long huffman_code;
 	struct element* next;
 } element_st;
-/*
-void showArray(unsigned int* array, unsigned long *ar,  int size)
-{
-	printf("\n\nSHOW ARRAY CHAR\n\n");
-	for (int i = 0; i < size; i++)
-	{
-		printf("%d: %lu - %d\n", i, ar[i], array[i]);
-	}
-}
-*/
-int compare(const void *s1, const void *s2)
-{
-	element_st *e1 = (element_st *)s1;
-	element_st *e2 = (element_st *)s2;
-	return e1->huffman_code - e2->huffman_code;
-}
 
 int binary_search(unsigned long code, unsigned int amount_of_bits, element_st *HASH_TABLE)
 {
