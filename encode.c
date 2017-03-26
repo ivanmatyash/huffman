@@ -48,7 +48,6 @@ void create_huffman_tree(heap* h, heap_node array_heap_nodes[SIZE_TABLE * 3])
 		array_heap_nodes[counter] = remove_min_node_heap(h);
 		counter++;
 		array_heap_nodes[counter] = remove_min_node_heap(h);
-//		printf("%d - %c - %d: %d - %c - %d\n\n", arrayHeapNodes[counter-1].priority, arrayHeapNodes[counter-1].value,arrayHeapNodes[counter-1].value, arrayHeapNodes[counter].priority, arrayHeapNodes[counter].value, arrayHeapNodes[counter].value);
 		insert_node_heap(h, array_heap_nodes[counter-1].priority + array_heap_nodes[counter].priority, array_heap_nodes[counter-1].value + array_heap_nodes[counter].value, &array_heap_nodes[counter-1], &array_heap_nodes[counter]);
 		counter++;
 	}	
@@ -64,7 +63,6 @@ void get_huffman_tree(heap* h, heap_node *array_heap_nodes, int *array_freq)
 		}
 
 	}
-	//printf("cur size = %d | %d", h->curSize, h->maxSize);
 	create_huffman_tree(h, array_heap_nodes);
 }
 
@@ -144,8 +142,6 @@ void write_code_in_file(char* input_file, char* output_file, unsigned long huffm
 	
 		if (number >= SIZE_BUF_FOR_WRITE - 3)
 		{
-//			for (int i = 0; i < number; i++)
-//				printf("i: %d - %lu\n", i, bufferForWrite[i]);
 			fwrite(bufferForWrite, sizeof(unsigned long), number, fileOut);
 			fflush(fileOut);
 			unsigned long temp = bufferForWrite[number];
@@ -161,14 +157,6 @@ void write_code_in_file(char* input_file, char* output_file, unsigned long huffm
 	fwrite(amount_of_significant_bits, sizeof(unsigned int), SIZE_TABLE, fileOut);
 	fclose(fileOut);
 	fclose(file);
-
-	printf("amount = %d\n", amount_of_w);
-/*	for (int i = 0; i <= number; i++)
-	{
-		printf("%lu\n", bufferForWrite[i]);
-	}
-*/
-	printf("amount bits: %d\n", counterBits);
 }
 
 void encode(char* input_file, char* output_file)
@@ -207,7 +195,6 @@ void encode(char* input_file, char* output_file)
 	stat(input_file, &st);
 	int size = st.st_size;
 	printf("Size of input file: %d\n", size);
-//	showArray(amount_of_significant_bits, huffman_codes_array, SIZE_TABLE);
 	delete_heap(h);
 	
 }
