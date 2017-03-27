@@ -24,9 +24,12 @@ void update_freq(int* array_freq, unsigned char *buffer)
 	}
 }
 
-void get_frequency(char* file_name, int *array_freq)
+int get_frequency(char* file_name, int *array_freq)
 {
 	FILE* file = fopen(file_name, "rb");
+	if (file == NULL) {
+		return -1;
+	}
 	unsigned char buffer[SIZE_BUF] = {0};
 	int end_of_file = 1;
 
@@ -38,6 +41,7 @@ void get_frequency(char* file_name, int *array_freq)
 		update_freq(array_freq, buffer);
 	}
 	fclose(file);
+	return 0;
 }
 
 void create_huffman_tree(heap* h, heap_node *array_heap_nodes)
@@ -103,7 +107,7 @@ void write_code_in_file(char* input_file_name, char* output_file_name, unsigned 
 {
 	FILE *input_file = fopen(input_file_name, "rb");
 	FILE *output_file = fopen(output_file_name, "wb");
-	
+
 	unsigned long buffer_for_write[SIZE_BUF_FOR_WRITE] = {0};	
 	unsigned char buffer[SIZE_BUF] = {0};
 	
@@ -189,7 +193,10 @@ void encode(char* input_file, char* output_file)
 	unsigned long huffman_codes_array[SIZE_TABLE];		// array for huffman codes
 	unsigned int amount_of_significant_bits[SIZE_TABLE];	// array for amounts of significant bits
 
-	get_frequency(input_file, array_freq);								// get frequency of symbols in input file
+	if (get_frequency(input_file, array_freq) == -1) {								// get frequency of symbols in input file
+		fprintf(stderr, "Error of openening input file.\n");
+		return;
+	}
 	heap* h = create_heap(SIZE_TABLE);								// create heap for huffman tree	
 	get_huffman_tree(h, array_heap_nodes, array_freq);						// build huffman tree (linkes)
 	painting_huffman_tree(h, huffman_codes_array, amount_of_significant_bits);			// get huffman codes and amounts of significant bits
@@ -200,11 +207,13 @@ void encode(char* input_file, char* output_file)
 	
 	clock_t end_time = clock();
 	
-	printf("time of encoding: %lf\n",((double) end_time - start_time) / CLOCKS_PER_SEC);
+	printf("time of encoding: \t\t%lf\n",((double) end_time - start_time) / CLOCKS_PER_SEC);
 	struct stat st;
 	stat(input_file, &st);
-	int size = st.st_size;
-	printf("Size of input file: %d\n", size);
-
-	
+	int size_in = st.st_size;
+	printf("Size of input file: \t\t%d\n", size_in);
+	stat(output_file, &st);
+	int size_out = st.st_size;
+	printf("Size of compressed file: \t%d\n", size_out);
+	printf("Compression ratio: \t\t%f\n", (float)size_in / size_out);
 }

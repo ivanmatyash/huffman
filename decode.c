@@ -201,9 +201,9 @@ void decode(char* input_file, char* output_file)
 	
 	clock_t end_time = clock();
 	
-	printf("time of decoding: %lf\n",((double) end_time - start_time) / CLOCKS_PER_SEC);
+	printf("time of decoding: \t\t%lf\n",((double) end_time - start_time) / CLOCKS_PER_SEC);
 	struct stat st;
 	stat(output_file, &st);
 	int size = st.st_size;
-	printf("Size of decompress-file: %d\n", size);
+	printf("Size of decompress-file: \t%d\n", size);
 }
