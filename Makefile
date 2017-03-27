@@ -1,5 +1,5 @@
-huff: main.c encode.c heap.c
-	gcc -o huff  main.c encode.c heap.c
+huff: main.c encode.c decode.c heap.c heap.h
+	gcc -o huff  main.c encode.c decode.c heap.c 
 heap.c: heap.h
 
 main.c: encode.c encode.h
