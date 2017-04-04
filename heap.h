@@ -1,3 +1,11 @@
+/**
+ * @file heap.h
+ * @author Ivan Matsiash
+ * @brief Header file for heap functions
+ 
+ * This file contains declare of heap and definitions of default functions, that used in working with heap.
+ * @copyright Copyright (c) 2017, Ivan Matsiash / FAMCS BSU, Epam
+ */
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>

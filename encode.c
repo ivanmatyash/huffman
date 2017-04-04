@@ -1,3 +1,11 @@
+/**
+ * @file encode.c
+ * @author Ivan Matsiash
+ * @brief Implementation of encoding functions
+ *
+ * This file contains implementations of functions, that used in processes of encoding input file.
+ * @copyright Copyright (c) 2017, Ivan Matsiash / FAMCS BSU, Epam
+ */
 #include "encode.h"
 #include "heap.h"
 #include <string.h>

@@ -1,3 +1,11 @@
+/**
+ * @file decode.c
+ * @author Ivan Matsiash
+ * @brief Implementation of functions of decoding files
+ *
+ * This file contains implementations of functions, that used in processes of decoding files.
+ * @copyright Copyright (c) 2017, Ivan Matsiash / FAMCS BSU, Epam
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -1,3 +1,11 @@
+/**
+ * @file main.c
+ * @author Ivan Matsiash
+ * @brief Start file, for working archiver
+ *
+ * This file checked input arguments and calling necessary function (encode or decode).  
+ * @copyright Copyright (c) 2017, Ivan Matsiash / FAMCS BSU, Epam
+ */
 #include <stdio.h>
 #include <string.h>
 #include "encode.h"

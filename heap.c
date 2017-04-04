@@ -1,3 +1,11 @@
+/**
+ * @file heap.c
+ * @author Ivan Matsiash
+ * @brief Implementation of deafult operations with heap
+ *
+ * This file contains implementation of default operation to work with heap, such as create new heap, delete node, insert node, get minimum node, etc.
+ * @copyright Copyright (c) 2017, Ivan Matsiash / FAMCS BSU, Epam
+ */
 #include "heap.h"
 
 heap* create_heap(int size)
