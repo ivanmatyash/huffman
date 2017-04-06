@@ -10,21 +10,36 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+/**
+ * Struct of heap node
+ */
 struct heap_node_struct
 {
-	int priority;
-	unsigned char value;
-	struct heap_node_struct *left;
-	struct heap_node_struct *right;
-	unsigned int huffman_code;
-	unsigned int amount_of_significant_bits;
+/**
+ * @name Fields of every node in heap
+ */
+ /*@{*/
+	int priority; /**< priority of node == frequency of this symbol in input file*/
+	unsigned char value; /**< value of node == symbol in input file*/
+	struct heap_node_struct *left; /**< pointer to left son of this node*/
+	struct heap_node_struct *right; /**< pointer to right son of this node*/
+	unsigned int huffman_code; /**< huffman code for this node*/
+	unsigned int amount_of_significant_bits; /**< amount of significant bits for this node*/
 } typedef heap_node;
 
+/**
+ * Struct of heap
+ */
 struct heap
 {
-	int max_size;
-	int cur_size;
-	heap_node *nodes;
+/**
+ * @name Parameters of heap
+ */
+ /*@{*/
+	int max_size; /**< the maximum size of heap*/
+	int cur_size; /**< current size of heap*/
+	heap_node *nodes; /**< pointer to array of nodes heap*/
+ /*@}*/
 } typedef heap;
 
 heap* create_heap(int);

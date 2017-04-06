@@ -11,6 +11,14 @@
 #include "encode.h"
 #include "decode.h"
 
+/**
+ * @brief Start point of execution application
+
+ * Function gets argument of command line and call necessaries functions
+ * @param argc amount of arguments
+ * @param argv pointer to array of arguments
+ * @return 1 in a case of error, 0 in a case of success
+ */
 int main(int argc, char* argv[])
 {
 	if (argc != 4) {

@@ -16,13 +16,31 @@
 #define SIZE_BUF_FOR_READ 10000
 #define SIZE_BUF_FOR_WRITE 4096
 
-typedef struct element{				// struct for hash table
-	int symbol;				// code symbol (char) (int for returning -1 in case of error)
-	unsigned int amount_of_bits;
-	unsigned long huffman_code;	
-	struct element* next;			// link at the next node in case of collision
+/**
+ * Structure for hash table elements
+ */
+typedef struct element{
+/**
+ * @name fields of elements of hash table
+ */
+ /*@{*/ 
+	int symbol; /**< code symbol (char) (int for returning -1 in case of error)*/
+	unsigned int amount_of_bits; /**< amount of significant bits for this node*/
+	unsigned long huffman_code; /**< huffman code for this node*/	
+	struct element* next; /**< link at the next node in case of collision*/
 } element_st;
 
+
+/**
+ * @brief Function search huffman code int hash table
+
+ * Function search symbol in hash table by this huffman code
+ * @param code huffman code of symbol
+ * @param amount_of_bits amount of significant bits for this symbol
+ * @param huffman_codes_array pointer to array of huffman codes
+ * @param hash_table pointer to hash table
+ * @return symbol by his huffman code
+ */
 int search_in_hash_table(unsigned long code, unsigned int amount_of_bits, element_st *hash_table)
 {	
 	if (hash_table[code].amount_of_bits == 0) {				// if this position in hash table is free
@@ -47,6 +65,13 @@ int search_in_hash_table(unsigned long code, unsigned int amount_of_bits, elemen
 	}	
 }
 
+/**
+ * @brief Function search maximum value in array of huffman codes
+
+ * Function get maximum value of huffman codes from array of huffman codes
+ * @param huffman_codes pointer to array of huffman codes
+ * @return maximum huffman code
+ */
 unsigned long get_max_huffman_code(unsigned long *huffman_codes)
 {
 	unsigned long max = 0;
@@ -58,6 +83,15 @@ unsigned long get_max_huffman_code(unsigned long *huffman_codes)
 	return max;
 }
 
+/**
+ * @brief Function create hash table for huffman codes for decoding
+
+ * Function create hash table by array of huffman codes
+ * @param hash_table pointer to hash table
+ * @param huffman_codes pointer to array of huffman codes
+ * @param amount_of_bits pointer to array of amount of significant bits
+ * @param max_huff_code maximum value of huffman codes
+ */
 void create_hash_table(element_st *hash_table, unsigned long *huffman_codes, unsigned int *amount_of_bits, unsigned long max_huff_code)
 {
 	for (int i = 0; i < max_huff_code; i++)
@@ -89,6 +123,13 @@ void create_hash_table(element_st *hash_table, unsigned long *huffman_codes, uns
 	}
 }
 
+/**
+ * @brief Function decoding input file and write result in output file
+
+ * Function read block form input file to buffer, decoding this and write result in output file
+ * @param input_file_name the name of input file
+ * @param output_file_name the name of output file
+ */
 void parse_code(char* input_file_name, char* output_file_name)
 {
 	FILE *input_file = fopen(input_file_name, "rb");
@@ -201,6 +242,13 @@ void parse_code(char* input_file_name, char* output_file_name)
 	free(hash_table);
 }
 
+/**
+ * @brief Start point to decode file
+
+ * Function call other functions to decoding input file
+ * @param input_file the name of input file
+ * @param output_file the name of output file
+ */
 void decode(char* input_file, char* output_file)
 {
 	clock_t start_time = clock();

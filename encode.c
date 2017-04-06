@@ -16,6 +16,14 @@
 #define SIZE_TABLE 256
 #define SIZE_BUF_FOR_WRITE 500 
 
+/**
+ * @brief Function print array to stdout
+
+ * Function print every element of array to stdout
+ * @param array array of int for printing
+ * @param ar array of long for printing
+ * @param size amount of elements in arrays
+ */
 void showArray(unsigned int* array, unsigned long *ar,  int size)
 {
 	printf("\n\nSHOW ARRAY CHAR\n\n");
@@ -25,6 +33,13 @@ void showArray(unsigned int* array, unsigned long *ar,  int size)
 	}
 }
 
+/**
+ * @brief Function update frequency of symbols
+
+ * Function update frequency of symbols by blocks
+ * @param array_freq array of frequency of symbols
+ * @param buffer block of input file
+ */
 void update_freq(int* array_freq, unsigned char *buffer)
 {
 	for (int i = 0; i < SIZE_BUF; i++) {
@@ -32,6 +47,14 @@ void update_freq(int* array_freq, unsigned char *buffer)
 	}
 }
 
+/**
+ * @brief Function for getintg frequency of symbols
+
+ * Function read elements from input file by buffers, and call function update_frequency that update frequency of symbols
+ * @param file_name the name of input file
+ * @param array_freq array of frequency of symbols
+ * @return -1 in a case of error, 0 in a case of success
+ */
 int get_frequency(char* file_name, int *array_freq)
 {
 	FILE* file = fopen(file_name, "rb");
@@ -52,6 +75,13 @@ int get_frequency(char* file_name, int *array_freq)
 	return 0;
 }
 
+/**
+ * @brief Create huffman tree from heap of nodes
+
+ * Function consistently removing minimum elements from heap, unite its and again insert into heap, while size of heap > 1
+ * @param h pointer to heap
+ * @param array_heap_nodes pointer to array of all nodes
+ */
 void create_huffman_tree(heap* h, heap_node *array_heap_nodes)
 {
 	int counter = 0;
@@ -68,6 +98,14 @@ void create_huffman_tree(heap* h, heap_node *array_heap_nodes)
 	}	
 }
 
+/**
+ * @brief Function start to creating huffman tree
+
+ * Function inserting symbol-nodes in heap
+ * @param h pointer to heap
+ * @param array_heap_nodes pointer to array of symbol-nodes
+ * @param array_freq pointer to array of frequency of symbols
+ */
 void get_huffman_tree(heap* h, heap_node *array_heap_nodes, int *array_freq)
 {
 	for (int i = 0; i < SIZE_TABLE; i++) {
@@ -78,6 +116,14 @@ void get_huffman_tree(heap* h, heap_node *array_heap_nodes, int *array_freq)
 	create_huffman_tree(h, array_heap_nodes);
 }
 
+/**
+ * @brief Recursive function painting nodes of huffman tree
+
+ * Function goes from root-node to lists and painting huffman codes for all nodes
+ * @param root pointer to root-node of huffman tree
+ * @param huffman_codes_array pointer to array of huffman_codes
+ * @param amount_of_significant_bits pointer to array of amount of significant bits
+ */
 void painting_huffman_tree_recursive(heap_node *root, unsigned long *huffman_codes_array, unsigned int *amount_of_significant_bits)
 {
 	if (root->right != NULL) {
@@ -99,6 +145,14 @@ void painting_huffman_tree_recursive(heap_node *root, unsigned long *huffman_cod
 	}
 }
 
+/**
+ * @brief Function painting nodes of huffman tree
+
+ * Function goes from root-node to lists and painting huffman codes for all nodes
+ * @param h pointer to heap
+ * @param huffman_codes_array pointer to array of huffman_codes
+ * @param amount_of_significant_bits pointer to array of amount of significant bits
+ */
 void painting_huffman_tree(heap* h, unsigned long *huffman_codes_array, unsigned int *amount_of_significant_bits)
 {
 	heap_node root = remove_min_node_heap(h);		// get the root of huffman tree
@@ -111,6 +165,15 @@ void painting_huffman_tree(heap* h, unsigned long *huffman_codes_array, unsigned
 	}
 }
 
+/**
+ * @brief Function encoding input file and write codes of huffman in output file
+
+ * Function read block form input file to buffer, encoding this and write huffman codes in output file
+ * @param input_file_name the name of input file
+ * @param output_file_name the name of output file
+ * @param huffman_codes_array pointer to array of huffman codes
+ * @param amount_of_significant_bits pointer to array of amount of significant bits
+ */
 void write_code_in_file(char* input_file_name, char* output_file_name, unsigned long *huffman_codes_array, unsigned int *amount_of_significant_bits)
 {
 	FILE *input_file = fopen(input_file_name, "rb");
@@ -192,6 +255,13 @@ void write_code_in_file(char* input_file_name, char* output_file_name, unsigned 
 	fclose(input_file);
 }
 
+/**
+ * @brief Start point to encode file
+
+ * Function call other functions to encoding input file
+ * @param input_file the name of input file
+ * @param output_file the name of output file
+ */
 void encode(char* input_file, char* output_file)
 {
 	clock_t start_time = clock();

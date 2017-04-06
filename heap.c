@@ -8,6 +8,13 @@
  */
 #include "heap.h"
 
+/**
+ * @brief Function for creating new heap
+
+ * Function create new heap of specified size.
+ * @param size the maximum amount of elements in new heap
+ * @return pointer of new heap
+ */
 heap* create_heap(int size)
 {
 	struct heap *h;
@@ -26,6 +33,12 @@ heap* create_heap(int size)
 	return h;	
 }
 
+/**
+ * @brief Function for deleting heap
+
+ * Function delete heap and freeing allocated memory.
+ * @param h pointer of deleting heap
+ */
 void delete_heap(heap* h)
 {
 	free(h->nodes);
@@ -40,6 +53,13 @@ void swap_nodes_heap(heap_node *a, heap_node *b)
 	*b = temp;
 }
 
+/**
+ * @brief Function for getting minimum element from heap
+
+ * Function return the minimum node from heap. Minimum - by key (priority).
+ * @param h pointer to heap
+ * @return minimum node or invalid node in case of error
+ */
 heap_node get_min_node_heap(heap* h)
 {
 	heap_node invalid_node = {-1, -1};
@@ -52,6 +72,17 @@ heap_node get_min_node_heap(heap* h)
 	}
 }
 
+/**
+ * @brief Function for inserting node in heap
+
+ * Function insert new node in exiting heap, and automatically sosrted this heap.
+ * @param h pointer to heap
+ * @param priority priority of added node (key)
+ * @param value value of added node
+ * @param left_son pointer to left son of node
+ * @param right_son pointer to right son of node
+ * @return true if inserting was successfull or false otherwise
+ */
 bool insert_node_heap(heap* h, int priority, unsigned char value, heap_node* left_son, heap_node* right_son)
 {
 	if (h->cur_size >= h->max_size)	{
@@ -74,6 +105,13 @@ bool insert_node_heap(heap* h, int priority, unsigned char value, heap_node* lef
 	return true;
 }
 
+/**
+ * @brief Function for removing minimum element from heap
+
+ * Function return minimum node and remove it from heap.
+ * @param h pointer to heap
+ * @return pointer to minimum heap or pointer to invalid node in case of an error
+ */
 heap_node remove_min_node_heap(heap *h)
 {
 	if (h->cur_size == 0) {
