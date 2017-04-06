@@ -12,9 +12,9 @@
 #include <time.h>
 #include <sys/stat.h>
 
-#define SIZE_BUF 4096 
+#define SIZE_BUF 200
 #define SIZE_TABLE 256
-#define SIZE_BUF_FOR_WRITE 4096 
+#define SIZE_BUF_FOR_WRITE 500
 
 /**
  * @brief Function print array to stdout
@@ -268,8 +268,8 @@ void encode(char* input_file, char* output_file)
 	
 	int array_freq[SIZE_TABLE] = {0};			// array for frequency of symbols in input file
 	heap_node array_heap_nodes[SIZE_TABLE * 3];		// array of nodes for building huffman tree					
-	unsigned long huffman_codes_array[SIZE_TABLE];		// array for huffman codes
-	unsigned int amount_of_significant_bits[SIZE_TABLE];	// array for amounts of significant bits
+	unsigned long huffman_codes_array[SIZE_TABLE] = {0};		// array for huffman codes
+	unsigned int amount_of_significant_bits[SIZE_TABLE] = {0};	// array for amounts of significant bits
 
 	if (get_frequency(input_file, array_freq) == -1) {								// get frequency of symbols in input file
 		fprintf(stderr, "Error of openening input file.\n");
