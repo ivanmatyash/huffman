@@ -23,7 +23,7 @@ struct heap_node_struct
 	unsigned char value; /**< value of node == symbol in input file*/
 	struct heap_node_struct *left; /**< pointer to left son of this node*/
 	struct heap_node_struct *right; /**< pointer to right son of this node*/
-	unsigned int huffman_code; /**< huffman code for this node*/
+	unsigned long huffman_code; /**< huffman code for this node*/
 	unsigned int amount_of_significant_bits; /**< amount of significant bits for this node*/
 } typedef heap_node;
 
