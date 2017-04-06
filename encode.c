@@ -12,9 +12,9 @@
 #include <time.h>
 #include <sys/stat.h>
 
-#define SIZE_BUF 200 
+#define SIZE_BUF 4096 
 #define SIZE_TABLE 256
-#define SIZE_BUF_FOR_WRITE 500 
+#define SIZE_BUF_FOR_WRITE 4096 
 
 /**
  * @brief Function print array to stdout
