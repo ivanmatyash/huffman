@@ -10,7 +10,6 @@
 #include "heap.h"
 #include <string.h>
 #include <time.h>
-#include <sys/stat.h>
 
 #define SIZE_BUF 200
 #define SIZE_TABLE 256
@@ -65,7 +64,7 @@ int get_frequency(char* file_name, int *array_freq)
 	int end_of_file = 1;
 
 	while (end_of_file) {
-		memset(buffer, 0, sizeof(unsigned char) * SIZE_BUF);				// clean buffer
+		memset(buffer, 0, sizeof(unsigned char) * SIZE_BUF);				
 		if (fread(buffer, sizeof(unsigned char), SIZE_BUF, file) < SIZE_BUF) {		// read next block from input file
 			end_of_file = 0;
 		}
@@ -90,10 +89,10 @@ void create_huffman_tree(heap* h, heap_node *array_heap_nodes)
 		counter++;
 		array_heap_nodes[counter] = remove_min_node_heap(h);							// get 2 minimum-priority nodes from binary heap
 	
-		int new_priority = array_heap_nodes[counter-1].priority + array_heap_nodes[counter].priority;		// calculate priority for new united node
-		unsigned char new_value = array_heap_nodes[counter-1].value + array_heap_nodes[counter].value;		// calculate value for new united node
+		int new_priority = array_heap_nodes[counter-1].priority + array_heap_nodes[counter].priority;		
+		unsigned char new_value = array_heap_nodes[counter-1].value + array_heap_nodes[counter].value;		
 	
-		insert_node_heap(h, new_priority, new_value, &array_heap_nodes[counter-1], &array_heap_nodes[counter]); // insert united node into binary heap
+		insert_node_heap(h, new_priority, new_value, &array_heap_nodes[counter-1], &array_heap_nodes[counter]); 
 		counter++;
 	}	
 }
@@ -110,7 +109,7 @@ void get_huffman_tree(heap* h, heap_node *array_heap_nodes, int *array_freq)
 {
 	for (int i = 0; i < SIZE_TABLE; i++) {
 		if (array_freq[i] != 0) {
-			insert_node_heap(h, array_freq[i], i, NULL, NULL);			// make nodes for every symbol and put it into binary heap
+			insert_node_heap(h, array_freq[i], i, NULL, NULL);			
 		}
 	}
 	create_huffman_tree(h, array_heap_nodes);
@@ -192,7 +191,8 @@ void write_code_in_file(char* input_file_name, char* output_file_name, unsigned 
 	int test_empty = fread(buffer, sizeof(char), 1, input_file);	
 	if (test_empty == 0) {						// if read 0 byte
 		end_of_file = 1;
-		amount_of_written = 0;					// amount of writting blocks = 0
+		amount_of_written = 0;				
+		fprintf(stderr, "Input file is empty.\n");
 	} else {
 		fseek(input_file, 0, SEEK_SET);
 	}
@@ -266,16 +266,16 @@ void encode(char* input_file, char* output_file)
 {
 	clock_t start_time = clock();
 	
-	int array_freq[SIZE_TABLE] = {0};			// array for frequency of symbols in input file
-	heap_node array_heap_nodes[SIZE_TABLE * 3];		// array of nodes for building huffman tree					
+	int array_freq[SIZE_TABLE] = {0};				// array for frequency of symbols in input file
+	heap_node array_heap_nodes[SIZE_TABLE * 3];			// array of nodes for building huffman tree					
 	unsigned long huffman_codes_array[SIZE_TABLE] = {0};		// array for huffman codes
 	unsigned int amount_of_significant_bits[SIZE_TABLE] = {0};	// array for amounts of significant bits
 
-	if (get_frequency(input_file, array_freq) == -1) {								// get frequency of symbols in input file
+	if (get_frequency(input_file, array_freq) == -1) {								
 		fprintf(stderr, "Error of openening input file.\n");
 		return;
 	}
-	heap* h = create_heap(SIZE_TABLE);								// create heap for huffman tree	
+	heap* h = create_heap(SIZE_TABLE);								
 	get_huffman_tree(h, array_heap_nodes, array_freq);						// build huffman tree (linkes)
 	painting_huffman_tree(h, huffman_codes_array, amount_of_significant_bits);			// get huffman codes and amounts of significant bits
 
@@ -286,12 +286,4 @@ void encode(char* input_file, char* output_file)
 	clock_t end_time = clock();
 	
 	printf("time of encoding: \t\t%lf\n",((double) end_time - start_time) / CLOCKS_PER_SEC);
-	struct stat st;
-	stat(input_file, &st);
-	int size_in = st.st_size;
-	printf("Size of input file: \t\t%d\n", size_in);
-	stat(output_file, &st);
-	int size_out = st.st_size;
-	printf("Size of compressed file: \t%d\n", size_out);
-	printf("Compression ratio: \t\t%f\n", (float)size_in / size_out);
 }

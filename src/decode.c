@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <sys/stat.h>
 
 #define SIZE_TABLE 256
 #define SIZE_BUF_FOR_READ 10000
@@ -146,6 +145,7 @@ void parse_code(char* input_file_name, char* output_file_name)
 	
 	fread(&amount, sizeof(int), 1, input_file);				// amount of blocks
 	if (amount == 0) {
+		fprintf(stderr, "Output file will be empty.\n");
 		fclose(input_file);	
 		fclose(output_file);
 		return;
@@ -258,8 +258,4 @@ void decode(char* input_file, char* output_file)
 	clock_t end_time = clock();
 	
 	printf("time of decoding: \t\t%lf\n",((double) end_time - start_time) / CLOCKS_PER_SEC);
-	struct stat st;
-	stat(output_file, &st);
-	int size = st.st_size;
-	printf("Size of decompress-file: \t%d\n", size);
 }
